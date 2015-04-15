@@ -91,6 +91,17 @@ Return the list of content
 The API is HTTP Accept-Language header aware. If not given french content will be retuned.
 In case of multiple accepted language the response structure will be adapted.
 
+### CSA Ratings
+-------------------------------
+
+TODO
+Here is the mapping of the CSA code :
+
+- 1
+- 2
+- 3
+- 4
+
 
 ### Global structure
 -------------------------------
@@ -763,6 +774,7 @@ For a UI purpose a third attribute is exposed `itemType`. In V1 the value is aut
               ],
               "color": "1",
               "productionNationality": "Etats-Unis",
+              "productionNationalityCode": ["US"],
               "productionYear": "1999",
               "updateDate": "2015-01-19T20:18:12.000+0100",
               "creationDate": null,
@@ -974,6 +986,7 @@ For a UI purpose a third attribute is exposed `itemType`. In V1 the value is aut
               "medias": [],
               "color": "1",
               "productionNationality": "Etats-Unis",
+              "productionNationalityCode": ["US"],
               "productionYear": null,
               "updateDate": "2014-12-01T11:00:59.000+0100",
               "creationDate": null,
@@ -1104,6 +1117,7 @@ For a UI purpose a third attribute is exposed `itemType`. In V1 the value is aut
               ],
               "color": "1",
               "productionNationality": "Etats-Unis",
+              "productionNationalityCode": ["US"],
               "productionYear": "2014",
               "updateDate": "2014-12-12T10:34:08.000+0100",
               "creationDate": null,
@@ -1261,6 +1275,7 @@ For a UI purpose a third attribute is exposed `itemType`. In V1 the value is aut
               ],
               "color": null,
               "productionNationality": "France",
+              "productionNationalityCode": ["US"],
               "productionYear": "2014",
               "updateDate": "2014-12-24T08:40:42.000+0100",
               "creationDate": null,
@@ -1363,6 +1378,7 @@ For a UI purpose a third attribute is exposed `itemType`. In V1 the value is aut
               "medias": [],
               "color": null,
               "productionNationality": null,
+              "productionNationalityCode": ["US"],
               "productionYear": null,
               "updateDate": "2015-02-02T16:37:39.000+0100",
               "creationDate": null,
@@ -1554,6 +1570,7 @@ This method allows users to create content (only itemType:"collection" allowed).
             },
             "color": "0",
             "productionNationality": "France - Belgique",
+            "productionNationalityCode": ["FR","BE"],
             "productionYear": "2011",
             "updateDate": "2014-12-08T20:12:08.000+0000",
             "id": 585877,
@@ -1673,6 +1690,7 @@ This method allows users to create content (only itemType:"collection" allowed).
            ],
            "color":"0",
            "productionNationality":"France - Belgique",
+           "productionNationalityCode": ["FR","BE"],
            "productionYear":"2011",
            "updateDate":"2014-12-08T20:12:08.000+0000",
            "id":585877,
@@ -2071,7 +2089,13 @@ Attach the given mediaId to the current content
 
 + Request (application/json)
 
-        353535
+        [
+            {
+                "mediaId" : 353535
+            },{
+                "mediaId" : 353536
+            }
+        ]
 
 + Response 201 (application/json)
 
@@ -2221,11 +2245,13 @@ Attach the given mediaId to the current content
 + Response 200 (application/json)
         
 
-### Add a new tags link [DELETE]
+### Delete a tags link [DELETE]
 
 Auto defined tags are not deletable. Only user added link could by deleted
 
 + Response 200 (application/json)
+
++ Response 403 (application/json)
 
 ## Awards list [/api/contents/{id}/awards]
 
@@ -2278,6 +2304,84 @@ Return the list of the "See Also" programs attached to the given id
         2798847,
         2798848,
         2798849
+        ]
+
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+## Retrieve sub object list [/api/contents/{id}/subobjects]
+Return the list of linked sub objects
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+
+### Retrieve a content see also [GET]
++ Response 200 (application/json)
+
+        [
+          {
+            "objectType": "UNIT",
+            "contentType": "SHOW",
+            "itemType": "movie",
+            "titles": {
+              "originalTitle": "The Artist",
+              "epgTitle": "The Artist",
+              "titleDivisible": "The Artist",
+              "subTitleDivisible": "Film Comédie dramatique"
+            },
+            "synopsis": {
+              "small": "En 1927, un acteur, vedette du cinéma muet, sombre dans l'oubli avec l'arrivée du parlant et assiste à l'ascension irrésistible d'une ancienne figurante.",
+              "medium": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma muet, mais l'irruption du parlant va mettre un terme brutal à sa carrière. L'acteur ne tourne plus et sombre dans l'oubli. A l'inverse, Peppy Miller, une jeune figurante, devient la nouvelle étoile de Hollywood...",
+              "large": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma, et sa célébrité n'a d'égal que son orgueil. Son producteur, Al Zimmer, l'invite à la projection de son dernier film, à la sortie duquel il croise Peppy Miller, une comédienne débutante. La jeune femme devient figurante dans un long métrage en tournage aux côtés de George. Les deux acteurs se plaisent aussitôt, mais George refuse de s'engager. C'est alors que le parlant fait son apparition. George, persuadé que cette technologie est sans avenir, va jusqu'à se séparer d'Al pour produire un film muet. Parallèlement, Peppy devient la nouvelle égérie du studio..."
+            },
+            "color": "0",
+            "productionNationality": "France - Belgique",
+            "productionYear": "2011",
+            "updateDate": "2014-12-08T20:12:08.000+0000",
+            "id": 585877,
+            "num": 1,
+            "lang": "fr",
+            "version": "20141208201208",
+            "ratingCSA": 1,
+            "ageRange": 2,
+            "duration": "100",
+            "boost": 32715,
+            "diffusionDate": "2012-10-05T18:55:00.000+0000"
+          },
+          {
+            "objectType": "UNIT",
+            "contentType": "SHOW",
+            "itemType": "movie",
+            "titles": {
+              "originalTitle": "The Artist",
+              "epgTitle": "The Artist",
+              "titleDivisible": "The Artist",
+              "subTitleDivisible": "Film Comédie dramatique"
+            },
+            "synopsis": {
+              "small": "En 1927, un acteur, vedette du cinéma muet, sombre dans l'oubli avec l'arrivée du parlant et assiste à l'ascension irrésistible d'une ancienne figurante.",
+              "medium": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma muet, mais l'irruption du parlant va mettre un terme brutal à sa carrière. L'acteur ne tourne plus et sombre dans l'oubli. A l'inverse, Peppy Miller, une jeune figurante, devient la nouvelle étoile de Hollywood...",
+              "large": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma, et sa célébrité n'a d'égal que son orgueil. Son producteur, Al Zimmer, l'invite à la projection de son dernier film, à la sortie duquel il croise Peppy Miller, une comédienne débutante. La jeune femme devient figurante dans un long métrage en tournage aux côtés de George. Les deux acteurs se plaisent aussitôt, mais George refuse de s'engager. C'est alors que le parlant fait son apparition. George, persuadé que cette technologie est sans avenir, va jusqu'à se séparer d'Al pour produire un film muet. Parallèlement, Peppy devient la nouvelle égérie du studio..."
+            },
+            "color": "0",
+            "productionNationality": "France - Belgique",
+            "productionYear": "2011",
+            "updateDate": "2014-12-08T20:12:08.000+0000",
+            "id": 585878,
+            "num": 1,
+            "lang": "fr",
+            "version": "20141208201208",
+            "ratingCSA": 1,
+            "ageRange": 2,
+            "duration": "100",
+            "boost": 32715,
+            "diffusionDate": "2012-10-05T18:55:00.000+0000"
+          }
         ]
 
 
@@ -2450,6 +2554,7 @@ Return the list of overloads added or modified since the last given version para
                 "medias": [],
                 "color": null,
                 "productionNationality": null,
+                "productionNationalityCode": [],
                 "productionYear": null,
                 "updateDate": null,
                 "creationDate": null,
@@ -2848,6 +2953,8 @@ Return a single channel object
         }
 
 + response 204 (application/json)
+
++ response 404 (application/json)
 
 ### Update a Channel [PUT]
 
