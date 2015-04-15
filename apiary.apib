@@ -1,0 +1,4436 @@
+FORMAT: 1A
+
+# BDDPe
+Provides the editorial data.
+
+Document status : WIP (Work In Progress)
+
+## Content structure
+Return the list of content
+
+### Localisation
+-------------------------------
+
+The API is HTTP Accept-Language header aware. If not given french content will be retuned.
+In case of multiple accepted language the response structure will be adapted.
+
+
+### Global structure
+-------------------------------
+
+Here is a mapping between ATG getContent response field, BDDPE XML web services and the current operation mapping.
+In order to minimize the number of field present in response some ATG Field had been replaced like `showTitle` that is now `titles.title`
+
+Type availability | Description
+----------------- | -----------
+E                 | episode
+P                 | program
+M                 | movie
+C                 | collection
+S                 | show
+F                 | person (figure)
+
+
+Mapping between ATG output and BDDP Xml service :
+
+
+REST Name  | REST Availability  | ATG Name          | ATG availability| Bddpe XML Name
+:----------------:| ---------------- | -------------- | :--------: | -----------------
+ itemType | E,P,M,S,C,F|itemType  |  E,P,M,S,C|programme.type
+ id | E,P,M,S,C,F|id  | E,P,M|programme.identifiant
+ titles.title | E,P,M,S,C|title  | E,P,M| programme.titre
+titles.subTitle | E,P,M,S,C|-|-|programme.listetitres.SOUS_TITRE_LABELLISE_PART1
+ titles.originalTtitle | E,P,M,S|-|-|programme.titreoriginal
+titles.epgTitle | E,P,M,S,C|-|-|programme.listetitres.TITRE_EPG
+ accroche | E,P,M,S,C|accroche  | E,P,M| programme.listedescriptifs.TXTCOURT
+ longAccroche | E,P,M,S,C|longAccroche  | E| programme.listedescriptifs.TXTLONG
+ creationDate | E,P,M,S,C|~~creationDate~~  | E,P,M| programme.datepremierediffusionlive
+ tagsByType | E,P,M,S,C|tags | E,P,M|listegenres, listethematiques, listeinformationscomplementaires
+ synopsis | E,P,M,S,C|synopsis  | E,P,M|programme.listedescriptifs.RESUMECOURT
+isColor|E,P,M,C,S|-|-|programme.couleur
+mediumSynopsis | E,P,M,S,C|-|-|programme.listedescriptifs.RESUMEMOYEN
+ longSynopsis| E,P,M,S,C|longSynopsis  | E,P,M|programme.listedescriptifs.RESUMELONG
+productionNationality| E,P,M,S|productionNationality  | E,P,M|programme.nationalite
+productionYear| E,P,M,S|productionYear  | E,P,M|programme.annee
+[members](#level-1-member)| E,P,M|members | E,M|listepersonnes
+ -| -|showTitle  | P|listepacks.libelle
+ num| E,P,M|numEpisode  | E|programme.episode
+ updateDate| E,P,M,S,C|publicationDate  | E|programme.datemaj
+ parentId| E,P,M,S,C|parentId | E| listepacks.identifiant
+ [partners](#level-1-partners)| E,P,M,S|comments|-|listeinformationscomplementaires.PARTENAIRES
+ [medias](#level-1-media)| E,P,M,S,C|-|-|listemedia
+ [person](#level-1-person)| F|-|-|-
+ [subobjects](#level-1-subject)| S,C|-|-|-
+ [awards](#level-1-awards)| E,P,M,S,C|-|-|-
+ version | E,P,M,S,C|-|-|-
+
+<a id="level-1-media"></a>
+### Media structure
+-------------------------------
+
+This section describe the mapping of members entries. Each member are stored under their function. The liste is also ordored using the function natural rank, and member rank.
+
+ATG Name          | ATG availability | Bddpe XML Name | REST Name
+:----------------:| ---------------- | -------------- | :--------:
+-|-|media.type|type
+-|-|media.hauteur|height
+-|-|media.largeur|width
+-|-|media.format|format
+-|-|media.nom|name
+-|-|media.type|imgType
+-|-|media.copyright|copyright
+-|-|media.rang| rank
+-|-|media.identifiant| id
+-|-|media.datemaj|updateDate
+-|picture|-|path
+Example :
+
+```json
+{
+    "type": "media_image",
+    "height": 270,
+    "width": 480,
+    "format": "image/jpeg",
+    "name": "169_48012.jpg",
+    "imgType": "STD169",
+    "copyright": "Skull Distribution",
+    "rank": 1,
+    "id": 40420,
+    "updateDate": "2013-12-26T08:05:32Z",
+    "path" : "/media_cpa/img/episode/..."
+}
+```
+
+<a id="level-1-member"></a>
+### Member structure
+-------------------------------
+
+
+This section describe the mapping of members entries. Each member are stored under their function. The liste is also ordored using the function natural rank, and member rank.
+
+ATG Name          | ATG availability | Bddpe XML Name | REST Name  |
+:----------------:| ---------------- | -------------- | :--------: |
+function|E,P,M|listepersonnes.personnes.fonction|function
+prefix|E,P,M|listepersonnes.prefix|prefix
+rank|E,P,M|listepersonnes.personnes.rang|rank
+lastName |E,P,M|listepersonnes.personnes.nom|persons[].lastName
+firstName|E,P,M|listepersonnes.personnes.prenom|persons[].firstName
+rank|E,P,M|listepersonnes.personnes.rang|persons[].rank
+id|E,P,M|listepersonnes.personnes.identifiant|persons[].id
+-|-|-|persons[].awards
+
+Example :
+
+```json
+"members": {
+      "2": {
+        "id": 2,
+        "function": "Acteur",
+        "rank": 12,
+        "prefix": "Avec : ",
+        "persons": [
+          {
+            "lastName": "Reeves",
+            "firstName": "Keanu",
+            "rank": 1,
+            "id": 21123,
+            "awards": [
+              {
+                "festivalId": 10,
+                "festivalName": "Oscars",
+                "festivalCountry": "Etats-Unis",
+                "festivalPlace": null,
+                "year": 2012,
+                "awardId": 8,
+                "awardName": "Oscar du meilleur acteur",
+                "order": 8
+              }
+          }
+        ]
+      },
+      "4": {
+        "id": 4,
+        "function": "Réalisateur",
+        "rank": 1,
+        "prefix": "De : ",
+        "persons": [
+          {
+            "lastName": "Wachowski",
+            "firstName": "Andy",
+            "rank": 1,
+            "id": 25198
+          }
+        ]
+      }
+```
+
+<a id="level-1-partners"></a>
+### Partners structure
+-------------------------------
+
+This section describe the structure of partner entries which group partner opinions. Historically these data were stored under the `informationcomplementaire` of XML.
+
+ATG Name          | ATG availability | Bddpe XML Name | REST Name  |
+:----------------:| ---------------- | -------------- | :--------: |
+-|-|nompartenaire| name
+-|-|identifiant|id
+-|-|nomnote|opinions[].type
+-|-|note|opinions[].rating
+-|-|recommende|opinions[].recommended
+
+Example :
+
+```json
+"partners": {
+    "20": {
+    "name": "Allociné",
+    "id": 20,
+    "opinions": [
+        {
+        "type": null,
+        "rating": 3.5,
+        "name": null,
+        "recommended": false,
+        "opinion": null
+        }
+    ]
+}
+
+```
+<a id="level-1-awards"></a>
+### Awards structure
+-------------------------------
+
+This section describe the structure of awards entries.
+
+ATG Name          | ATG availability | Bddpe XML Name | REST Name  |
+:----------------:| ---------------- | -------------- | :--------: |
+-|-|-|opinions[].festivalId
+-|-|-|opinions[].festivalName
+-|-|-|opinions[].festivalCountry
+-|-|-|opinions[].festivalPlace
+-|-|-|opinions[].year
+-|-|-|opinions[].awardId
+-|-|-|opinions[].awardName
+-|-|-|opinions[].order
+
+Example :
+
+
+```json
+        "awards" : [{
+            "festivalId": 7,
+            "festivalName": "César",
+            "festivalCountry": "France",
+            "festivalPlace": null,
+            "year": 2012,
+            "awardId": 9,
+            "awardName": "César du meilleur réalisateur",
+            "order": 9
+          }]
+```
+
+### List structure
+-------------------------------
+
+Today lists come from ATG. The ATG object could be found under the `data` key. If during the import phase children are found attached to a common BDDP object we provide the `parentId`.
+
+```json
+        {
+          "objectType": "PACK",
+          "contentType": "LIST",
+          "itemType": "LIST",
+          "id": -32404,
+          "parentId": 4443353,
+          "version": "20141222083339",
+          "data": {
+            "itemType": "season",
+            "id": "8100842",
+            "children": [
+              "ANT_1163791_6",
+              "ANT_1163791_8",
+              "ANT_1163791_10",
+              "ANT_1163791_16",
+              "ANT_1163791_11",
+              "ANT_1163791_7",
+              "ANT_1163791_13",
+              "ANT_1163791_2",
+              "ANT_1163791_9",
+              "ANT_1163791_17",
+              "ANT_1163791_12",
+              "ANT_1163791_5",
+              "ANT_1163791_4",
+              "ANT_1163791_18",
+              "ANT_1163791_1",
+              "ANT_1163791_3",
+              "ANT_1163791_14",
+              "ANT_1163791_15"
+            ],
+            "revision": 1415366598647
+          }
+        }
+```
+
+# Group Content
+
+Each content is typed using two fields. The first is `objectType` and should be used to determine what kind of object we're dealing with. Then `contentType` will be used to get an editorial kind of what is in the content.
+
+Each object is typed using `objectType` field. This value should be used to known how to act with the current object :
+- `BRAND` : Represent a brand. No parent is defined.
+- `SEASON` : Represent a season. The `SEASON` parent is a `BRAND`.
+- `UNIT` : Every content that don't have child or parent relation.
+- `LIST` : BDDP Pack and Part. Should be refactored in the future.
+- `PACK `: ATG Imported list.
+
+In addition, is provided the contentn type `contentType`
+- `FILM` : Movie
+- `SERIE` : Brand
+- `DESSINANIME` : Animation
+- `MAGAZINE` : Magazine
+- `CONCERT` : Music
+- `THEATRE` : Theater
+- `SPORT` : Sport
+- `DOCUMENTAIRE` : Documentary
+- `AUTRE` : Other
+- `SHOW` : Show
+- `SEASON` : Season
+
+For a UI purpose a third attribute is exposed `itemType`. In V1 the value is automatically computed based on the `objectType`, the `contentType` and the attached object (parent, child) :
+
+- `LIST`
+- `BRAND`
+- `SEASON`
+- `SHOW`
+- `MOVIE`
+- `EPISODE`
+- `PROGRAM`
+
+
+## List of contents [/api/contents?version={version}&limit={limit}&page={page}&full={full}]
+
+### Get update [GET]
+
++ Optional Parameters
+    + version (required, number, `20141123101010`) ... String representing the version that will be used to filter the returned objects.
+    + limit (optional, number, `10`) ... The number of elements retuned limit
+    + page (optional, number, `2`) ... The page to be returned
+    + full (optional, boolean, `true`) ... Ask for full objects or not
+
++ Response 200 (application/json)
+
+        {
+          "data": [
+            {
+              "objectType": "UNIT",
+              "contentType": "FILM",
+              "itemType": "MOVIE",
+              "titles": {
+                "originalTitle": "The Matrix",
+                "epgTitle": "Matrix",
+                "titleDivisible": "Matrix",
+                "titleIndivisible": null,
+                "subTitleDivisible": "Film Science-fiction",
+                "subTitleIndivisible": null
+              },
+              "medias": [
+                {
+                  "type": "IMAGE",
+                  "height": 394,
+                  "width": 700,
+                  "format": "image/jpeg",
+                  "name": "169_3235.jpg",
+                  "imgType": "STD169",
+                  "copyright": null,
+                  "rank": 1,
+                  "id": 3608,
+                  "updateDate": "2013-04-13T12:14:31.000+0200",
+                  "path": "plmphoto:/169/13616/169_3235.jpg"
+                },
+                {
+                  "type": "IMAGE",
+                  "height": 272,
+                  "width": 352,
+                  "format": "image/jpeg",
+                  "name": "STD_3236.jpg",
+                  "imgType": "STD",
+                  "copyright": " ",
+                  "rank": 1,
+                  "id": 111894,
+                  "updateDate": "2012-08-27T12:01:41.000+0200",
+                  "path": "plmphoto:/STD/13616/STD_3236.jpg"
+                },
+                {
+                  "type": "IMAGE",
+                  "height": 600,
+                  "width": 800,
+                  "format": "image/jpeg",
+                  "name": "canal.fr_1042176_1_VM_16_MTBD_804.jpg",
+                  "imgType": "STD",
+                  "copyright": null,
+                  "rank": 1,
+                  "id": 1787918,
+                  "updateDate": "2014-12-18T08:08:44.000+0100",
+                  "path": "atgphoto:/804/jpg/canal.fr_1042176_1_VM_16_MTBD_804.jpg"
+                },
+                {
+                  "type": "IMAGE",
+                  "height": 426,
+                  "width": 964,
+                  "format": "image/jpeg",
+                  "name": "MEA_193668_3236.jpg",
+                  "imgType": "MEAEUREKA",
+                  "copyright": null,
+                  "rank": 1,
+                  "id": 15118664,
+                  "updateDate": "2014-12-08T10:57:48.000+0100",
+                  "path": "plmphoto:/QT/MEA_193668_3236.jpg"
+                },
+                {
+                  "type": "IMAGE",
+                  "height": 426,
+                  "width": 964,
+                  "format": "image/jpeg",
+                  "name": "MEA_193668_3236.jpg",
+                  "imgType": "MEASOIR",
+                  "copyright": null,
+                  "rank": 1,
+                  "id": 15118664,
+                  "updateDate": "2014-12-08T10:57:48.000+0100",
+                  "path": "plmphoto:/QT/MEA_193668_3236.jpg"
+                },
+                {
+                  "type": "IMAGE",
+                  "height": 394,
+                  "width": 700,
+                  "format": "image/jpeg",
+                  "name": "169_159100.jpg",
+                  "imgType": "STD169",
+                  "copyright": "Warner Bros Entertainment",
+                  "rank": 1,
+                  "id": 15119984,
+                  "updateDate": "2014-12-08T12:11:04.000+0100",
+                  "path": "plmphoto:/169/14845/169_159100.jpg"
+                },
+                {
+                  "type": "IMAGE",
+                  "height": 272,
+                  "width": 352,
+                  "format": "image/jpeg",
+                  "name": "STD_159100.jpg",
+                  "imgType": "STD",
+                  "copyright": "Warner Bros Entertainment",
+                  "rank": 1,
+                  "id": 15119989,
+                  "updateDate": "2014-12-08T12:11:04.000+0100",
+                  "path": "plmphoto:/STD/14845/STD_159100.jpg"
+                },
+                {
+                  "type": "IMAGE",
+                  "height": 360,
+                  "width": 1400,
+                  "format": "image/jpeg",
+                  "name": "19.12_matrix.jpg",
+                  "imgType": "CARWEB",
+                  "copyright": null,
+                  "rank": 1,
+                  "id": 15325879,
+                  "updateDate": "2014-12-13T14:56:37.000+0100",
+                  "path": "plmphoto:/MWB/19.12_matrix.jpg"
+                }
+              ],
+              "color": "1",
+              "productionNationality": "Etats-Unis",
+              "productionYear": "1999",
+              "updateDate": "2015-01-19T20:18:12.000+0100",
+              "creationDate": null,
+              "synopsis": "Dans un futur proche, un jeune pirate informatique, aidé par un groupe de résistants, déclare la guerre à une dictature d'un nouveau genre, «la Matrice».",
+              "mediumSynopsis": "Dans un futur proche, un jeune programmeur, Thomas Anderson, mène une vie routinière entre son travail «officiel», plutôt assommant, et ses activités nocturnes de pirate informatique, qu'il mène sous le pseudonyme de Neo. Un jour, un certain Morpheus le contacte, l'invitant à aller au-delà des apparences...",
+              "longSynopsis": "Dans un futur proche, un jeune programmeur, Thomas Anderson, mène une vie routinière entre son travail «officiel», plutôt assommant, et ses activités nocturnes de pirate informatique, qu'il mène sous le pseudonyme de Neo. Un jour, un certain Morpheus le contacte, l'invitant à aller au-delà des apparences pour lutter contre «la Matrice». Très intrigué, et après moult aventures, Neo finit par rencontrer son énigmatique interlocuteur. Ce qu'il apprend alors le stupéfie : d'après Morpheus, le monde dans lequel il vit n'est qu'une immense illusion, générée par un ordinateur ultra-perfectionné et contrôlée par un mystérieux organisme : la Matrice. Neo serait le seul homme capable de vaincre la Matrice et de mettre fin à l'esclavage de ses congénères...",
+              "id": 114045,
+              "parentId": null,
+              "num": 0,
+              "members": {
+                "2": {
+                  "id": 2,
+                  "function": "Acteur",
+                  "rank": 12,
+                  "prefix": "Avec : ",
+                  "persons": [
+                    {
+                      "lastName": "Reeves",
+                      "firstName": "Keanu",
+                      "rank": 1,
+                      "id": 21123,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Fishburne",
+                      "firstName": "Laurence",
+                      "rank": 2,
+                      "id": 21097,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Moss",
+                      "firstName": "Carrie-Anne",
+                      "rank": 3,
+                      "id": 25365,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Weaving",
+                      "firstName": "Hugo",
+                      "rank": 4,
+                      "id": 17385,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Foster",
+                      "firstName": "Gloria",
+                      "rank": 5,
+                      "id": 12420,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Pantoliano",
+                      "firstName": "Joe",
+                      "rank": 6,
+                      "id": 19494,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Chong",
+                      "firstName": "Marcus",
+                      "rank": 7,
+                      "id": 12422,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Arahanga",
+                      "firstName": "Julian",
+                      "rank": 8,
+                      "id": 12419,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "McClory",
+                      "firstName": "Belinda",
+                      "rank": 9,
+                      "id": 12421,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Goddard",
+                      "firstName": "Paul",
+                      "rank": 10,
+                      "id": 27225,
+                      "awards": null
+                    }
+                  ]
+                },
+                "4": {
+                  "id": 4,
+                  "function": "Réalisateur",
+                  "rank": 1,
+                  "prefix": "De : ",
+                  "persons": [
+                    {
+                      "lastName": "Wachowski",
+                      "firstName": "Andy",
+                      "rank": 1,
+                      "id": 25198,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Wachowski",
+                      "firstName": "Lana",
+                      "rank": 2,
+                      "id": 12393,
+                      "awards": null
+                    }
+                  ]
+                }
+              },
+              "partners": {
+                "20": {
+                  "name": "Allociné",
+                  "id": 20,
+                  "opinions": [
+                    {
+                      "type": "NOTE_PRESSE",
+                      "rating": 3.5,
+                      "name": null,
+                      "recommended": false,
+                      "opinion": null
+                    }
+                  ]
+                },
+                "25": {
+                  "name": "Télérama",
+                  "id": 25,
+                  "opinions": [
+                    {
+                      "type": "NOTE_TELERAMA",
+                      "rating": 1,
+                      "name": "Critique",
+                      "recommended": true,
+                      "opinion": "Dans un futur proche, un hacker déclare la guerre à une dictature d'un nouveau genre, la Matrice. LE film qui a redistribué les cartes du cinéma d'action hollywoodien. Brillant pot-pourri des tendances fin de siècle : mangas, jeux vidéo, kung-fu, virtuel."
+                    }
+                  ]
+                },
+                "26": {
+                  "name": "Télécâble Sat",
+                  "id": 26,
+                  "opinions": [
+                    {
+                      "type": "NOTE_ETOILE",
+                      "rating": 4,
+                      "name": "Critique",
+                      "recommended": true,
+                      "opinion": "«Matrix» ne se contente pas d'être spectaculaire. Ce grand film innovant a modernisé radicalement des vieux thèmes de la science-fiction, révolutionné l'utilisation des effets spéciaux (ils deviennent un vrai enjeu dramatique) et assimilé intelligemment la culture des jeux vidéo."
+                    }
+                  ]
+                },
+                "44": {
+                  "name": "SensCritique",
+                  "id": 44,
+                  "opinions": [
+                    {
+                      "type": "NOTE_SENSCRIT",
+                      "rating": 7.7,
+                      "name": null,
+                      "recommended": true,
+                      "opinion": null
+                    }
+                  ]
+                }
+              },
+              "tagsByType": {
+                "GENRE_CANAL": [
+                  {
+                    "id": 1,
+                    "label": "Cinéma"
+                  }
+                ],
+                "SOUS_GENRE_CANAL": [
+                  {
+                    "id": 28,
+                    "label": "Film Science-fiction"
+                  }
+                ],
+                "MOTCLE": [
+                  {
+                    "id": 2185,
+                    "label": "Matrix"
+                  }
+                ]
+              },
+              "totalEpisode": null,
+              "subObject": null,
+              "lang": "fr",
+              "version": "20150119191812",
+              "awards": null,
+              "ratingCSA": 2,
+              "ageRange": 2,
+              "duration": "136",
+              "boost": "28899",
+              "data": null
+            },
+            {
+              "objectType": "BRAND",
+              "contentType": "SERIE",
+              "itemType": "BRAND",
+              "titles": {
+                "originalTitle": "Army Wives",
+                "epgTitle": "American Wives",
+                "titleDivisible": "American Wives",
+                "titleIndivisible": null,
+                "subTitleDivisible": "Série Drame",
+                "subTitleIndivisible": null
+              },
+              "medias": [],
+              "color": "1",
+              "productionNationality": "Etats-Unis",
+              "productionYear": null,
+              "updateDate": "2014-12-01T11:00:59.000+0100",
+              "creationDate": null,
+              "synopsis": "Le quotidien de quatre femmes et un homme, tous mariés à un militaire, qui vivent ensemble sur la base de Fort Marshall, en Caroline du Sud.",
+              "mediumSynopsis": "Le quotidien de quatre femmes et un homme, tous mariés à un militaire, qui vivent ensemble sur la base de Fort Marshall, en Caroline du Sud.",
+              "longSynopsis": "Sur la base militaire de Fort Marshall, située en Caroline du Sud, quatre femmes et un homme ont pour point commun d'être mariés à un militaire. Ils gèrent le quotidien et s'occupent des enfants, en attendant patiemment le retour de leurs conjoints. Au fil du temps, des liens d'amitié et de fraternité se sont tissés entre eux et ils sont amenés à partager leurs secrets, plaisirs et malheurs, et surtout à s'entraider. Une série adaptée du roman «Army Wives : The Unwritten Code of Military Marriage», de Tanya Biank.",
+              "id": 4444232,
+              "parentId": null,
+              "num": null,
+              "members": {
+                "2": {
+                  "id": 2,
+                  "function": "Acteur",
+                  "rank": 12,
+                  "prefix": "Avec : ",
+                  "persons": [
+                    {
+                      "lastName": "Pressman",
+                      "firstName": "Sally",
+                      "rank": 1,
+                      "id": 121701,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Fuller",
+                      "firstName": "Drew",
+                      "rank": 2,
+                      "id": 121721,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "McNamara",
+                      "firstName": "Brian",
+                      "rank": 3,
+                      "id": 119045,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Delaney",
+                      "firstName": "Sean",
+                      "rank": 4,
+                      "id": 5465,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Bell",
+                      "firstName": "Catherine",
+                      "rank": 5,
+                      "id": 6528,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Brannagh",
+                      "firstName": "Brigid",
+                      "rank": 6,
+                      "id": 121694,
+                      "awards": null
+                    }
+                  ]
+                }
+              },
+              "partners": null,
+              "tagsByType": {
+                "GENRE_CANAL": [
+                  {
+                    "id": 4,
+                    "label": "Séries"
+                  }
+                ],
+                "SOUS_GENRE_CANAL": [
+                  {
+                    "id": 90,
+                    "label": "Série Drame"
+                  }
+                ]
+              },
+              "totalEpisode": null,
+              "subObject": [
+                4567398
+              ],
+              "lang": "fr",
+              "version": "20141201100059",
+              "awards": null,
+              "ratingCSA": null,
+              "duration": "0",
+              "boost": "1",
+              "data": null
+            },
+            {
+              "objectType": "SEASON",
+              "contentType": "SERIE",
+              "itemType": "SEASON",
+              "titles": {
+                "originalTitle": "Revenge",
+                "epgTitle": "Revenge",
+                "titleDivisible": "Revenge",
+                "titleIndivisible": null,
+                "subTitleDivisible": "Série Drame",
+                "subTitleIndivisible": null
+              },
+              "medias": [
+                {
+                  "type": "IMAGE",
+                  "height": 272,
+                  "width": 352,
+                  "format": "image/jpeg",
+                  "name": "STD_530890.jpg",
+                  "imgType": "STD",
+                  "copyright": "American Broadcasting Companies, Inc",
+                  "rank": 1,
+                  "id": 12756014,
+                  "updateDate": "2014-09-29T19:32:31.000+0200",
+                  "path": "plmphoto:/STD/15052/STD_530890.jpg"
+                },
+                {
+                  "type": "IMAGE",
+                  "height": 394,
+                  "width": 700,
+                  "format": "image/jpeg",
+                  "name": "169_530890.jpg",
+                  "imgType": "STD169",
+                  "copyright": "American Broadcasting Companies, Inc",
+                  "rank": 1,
+                  "id": 12756025,
+                  "updateDate": "2015-01-12T19:27:43.000+0100",
+                  "path": "plmphoto:/169/15052/169_530890.jpg"
+                }
+              ],
+              "color": "1",
+              "productionNationality": "Etats-Unis",
+              "productionYear": "2014",
+              "updateDate": "2014-12-12T10:34:08.000+0100",
+              "creationDate": null,
+              "synopsis": "La vengeance a changé de camp. Dépouillée de tout ce qui faisait sa vie, Victoria est déterminée à détruire méthodiquement Emily, dont elle a percé le secret.",
+              "mediumSynopsis": "La vengeance a changé de camp. Dépouillée de tout ce qui faisait sa vie, Victoria est déterminée à détruire méthodiquement Emily, dont elle a percé le secret.",
+              "longSynopsis": "Emily savoure sa revanche. Victoria, son ennemie jurée, a été placée derrière les quatre murs d'un hôpital psychiatrique. La vengeance a changé de camp. Dépouillée de tout ce qui faisait sa vie, Victoria est déterminée à fouler Emily au pied et à la détruire méthodiquement. De son côté, la jeune femme cherche à comprendre pourquoi son père David ne s'est jamais manifesté au point qu'elle l'a cru mort et tremble pour sa soeur Charlotte, en bien mauvaise posture. Le coeur de Jack balance entre Emily et une nouvelle venue.",
+              "id": 4443127,
+              "parentId": 4443353,
+              "num": 4,
+              "members": {
+                "2": {
+                  "id": 2,
+                  "function": "Acteur",
+                  "rank": 12,
+                  "prefix": "Avec : ",
+                  "persons": [
+                    {
+                      "lastName": "Stowe",
+                      "firstName": "Madeleine",
+                      "rank": 1,
+                      "id": 24355,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "VanCamp",
+                      "firstName": "Emily",
+                      "rank": 2,
+                      "id": 5934,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Mann",
+                      "firstName": "Gabriel",
+                      "rank": 3,
+                      "id": 921,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Allen",
+                      "firstName": "Christa B",
+                      "rank": 4,
+                      "id": 95544,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Bowman",
+                      "firstName": "Joshua",
+                      "rank": 5,
+                      "id": 20887,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Tupper",
+                      "firstName": "James",
+                      "rank": 6,
+                      "id": 8265,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Vanasse",
+                      "firstName": "Karine",
+                      "rank": 7,
+                      "id": 5122,
+                      "awards": null
+                    }
+                  ]
+                }
+              },
+              "partners": null,
+              "tagsByType": {
+                "GENRE_CANAL": [
+                  {
+                    "id": 4,
+                    "label": "Séries"
+                  }
+                ],
+                "SOUS_GENRE_CANAL": [
+                  {
+                    "id": 90,
+                    "label": "Série Drame"
+                  }
+                ],
+                "MOTCLE": [
+                  {
+                    "id": 12029,
+                    "label": "Revenge"
+                  }
+                ]
+              },
+              "totalEpisode": null,
+              "subObject": [
+                4132450,
+                4164560,
+                4201039,
+                4214612,
+                4259173,
+                4272582,
+                4308758,
+                4331569,
+                4332415,
+                4332402,
+                4440624,
+                4555164,
+                4594010,
+                4610697,
+                4383478
+              ],
+              "lang": "fr",
+              "version": "20141212093408",
+              "awards": null,
+              "ratingCSA": null,
+              "duration": "0",
+              "boost": "1",
+              "data": null
+            },
+            {
+              "objectType": "UNIT",
+              "contentType": "SHOW",
+              "itemType": "MOVIE",
+              "titles": {
+                "originalTitle": null,
+                "epgTitle": "Le grand journal",
+                "titleDivisible": "Le grand journal",
+                "titleIndivisible": null,
+                "subTitleDivisible": "Le grand journal",
+                "subTitleIndivisible": null
+              },
+              "medias": [
+                {
+                  "type": "IMAGE",
+                  "height": 394,
+                  "width": 700,
+                  "format": "image/jpeg",
+                  "name": "169_529307.jpg",
+                  "imgType": "STD169",
+                  "copyright": "Canal + / Maxime Bruno",
+                  "rank": 1,
+                  "id": 12133610,
+                  "updateDate": "2014-09-12T16:10:31.000+0200",
+                  "path": "plmphoto:/169/15122/169_529307.jpg"
+                },
+                {
+                  "type": "IMAGE",
+                  "height": 272,
+                  "width": 352,
+                  "format": "image/jpeg",
+                  "name": "STD_529307.jpg",
+                  "imgType": "STD",
+                  "copyright": "Canal + / Maxime Bruno",
+                  "rank": 1,
+                  "id": 12133629,
+                  "updateDate": "2014-09-12T16:10:31.000+0200",
+                  "path": "plmphoto:/STD/15122/STD_529307.jpg"
+                }
+              ],
+              "color": null,
+              "productionNationality": "France",
+              "productionYear": "2014",
+              "updateDate": "2014-12-24T08:40:42.000+0100",
+              "creationDate": null,
+              "synopsis": "En compagnie des personnalités marquantes de l'actualité, Antoine de Caunes et ses chroniqueurs discutent politique, sujets de société, sport, littérature, cinéma et musique.",
+              "mediumSynopsis": "En compagnie des personnalités marquantes de l'actualité, Antoine de Caunes et ses chroniqueurs discutent politique, sujets de société, sport, littérature, cinéma et musique.",
+              "longSynopsis": "En compagnie des personnalités marquantes de l'actualité, Antoine de Caunes et ses chroniqueurs discutent politique, sujets de société, sport, littérature, cinéma et musique.",
+              "id": 4444783,
+              "parentId": null,
+              "num": null,
+              "members": {
+                "3": {
+                  "id": 3,
+                  "function": "Présentateur",
+                  "rank": 8,
+                  "prefix": "Présenté par : ",
+                  "persons": [
+                    {
+                      "lastName": "Caunes",
+                      "firstName": "Antoine de",
+                      "rank": 1,
+                      "id": 118887,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Aphatie",
+                      "firstName": "Jean-Michel",
+                      "rank": 2,
+                      "id": 2937,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Rissouli",
+                      "firstName": "Karim",
+                      "rank": 3,
+                      "id": 3509,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Trapenard",
+                      "firstName": "Augustin",
+                      "rank": 4,
+                      "id": 127857,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Polony",
+                      "firstName": "Natacha",
+                      "rank": 5,
+                      "id": 5646,
+                      "awards": null
+                    },
+                    {
+                      "lastName": "Serrell",
+                      "firstName": "Mathilde",
+                      "rank": 6,
+                      "id": 164983,
+                      "awards": null
+                    }
+                  ]
+                }
+              },
+              "partners": null,
+              "tagsByType": {
+                "GENRE_CANAL": [
+                  {
+                    "id": 7,
+                    "label": "Divertissement"
+                  }
+                ],
+                "SOUS_GENRE_CANAL": [
+                  {
+                    "id": 146,
+                    "label": "Talk show"
+                  }
+                ]
+              },
+              "totalEpisode": null,
+              "subObject": null,
+              "lang": "fr",
+              "version": "20141224074042",
+              "awards": null,
+              "ratingCSA": 1,
+              "ageRange": 2,
+              "duration": "50",
+              "boost": "1",
+              "data": null
+            },
+            {
+              "objectType": "LIST",
+              "contentType": "AUTRE",
+              "itemType": "SHOW",
+              "titles": {
+                "originalTitle": null,
+                "epgTitle": "Jeunesse2",
+                "titleDivisible": "Jeunesse2",
+                "titleIndivisible": null,
+                "subTitleDivisible": "Divertissement",
+                "subTitleIndivisible": null
+              },
+              "medias": [],
+              "color": null,
+              "productionNationality": null,
+              "productionYear": null,
+              "updateDate": "2015-02-02T16:37:39.000+0100",
+              "creationDate": null,
+              "synopsis": null,
+              "mediumSynopsis": null,
+              "longSynopsis": null,
+              "id": 4696605,
+              "parentId": null,
+              "num": null,
+              "members": null,
+              "partners": null,
+              "tagsByType": {
+                "GENRE_CANAL": [
+                  {
+                    "id": 7,
+                    "label": "Divertissement"
+                  }
+                ],
+                "SOUS_GENRE_CANAL": [
+                  {
+                    "id": 152,
+                    "label": "Divertissement"
+                  }
+                ]
+              },
+              "totalEpisode": null,
+              "subObject": null,
+              "lang": "fr",
+              "version": "20150202153739",
+              "awards": null,
+              "ratingCSA": 4,
+              "duration": "0",
+              "boost": "1",
+              "data": {
+                "itemType": "list",
+                "id": "6Play_chaine_M6_Jeunesse1",
+                "revision": 1417521707328,
+                "title": "Jeunesse2",
+                "creationDate": "2014-02-19",
+                "ratingCSA": 4,
+                "idKey": "6Play_chaine_M6_Jeunesse1",
+                "tags": [
+                  {
+                    "type": "CLASSIFICATION",
+                    "name": "Csat_CornerChaine_M6",
+                    "displayName": "Csat_CornerChaine_M6"
+                  }
+                ],
+                "channel": {
+                  "itemType": "externalChannel",
+                  "id": "M6"
+                },
+                "maxResult": 1999,
+                "accessPeriods": [
+                  {
+                    "startMinute": 0,
+                    "endMinute": 0,
+                    "startHour": 0,
+                    "endHour": 20
+                  }
+                ],
+                "rules": [
+                  {
+                    "id": "9800004",
+                    "itemType": "searchRule",
+                    "maxResult": 2000,
+                    "query": "tags_CLASSIFICATION:\\/6Play\\/Chaines\\/M6\\/6Play\\ \\-\\ Jeunesse* AND (itemType:serie OR itemType:season OR itemType:show)"
+                  }
+                ]
+              }
+            }
+          ],
+          "paging": {
+            "previous": null,
+            "next": "http://127.0.0.1:8080/api/contents/?page=2",
+            "nbElement": 5
+          }
+        }
+
+## Unit content [/api/contents/{id}&full={full}]
+A single Content object with all its details
+
++ Parameters
+    + id (required, number, `585877`) ... Numeric `id` of the Content to perform action with.
+    + full (optional, boolean, `true`) ... Ask for full object or not
+
+### Retrieve a Note [GET]
++ Response 200 (application/json)
+
+        {
+          "objectType": "UNIT",
+          "contentType": "FILM",
+          "itemType": "MOVIE",
+          "titles": {
+            "originalTitle": "The Artist",
+            "epgTitle": "The Artist",
+            "titleDivisible": "The Artist",
+            "titleIndivisible": null,
+            "subTitleDivisible": "Film Comédie dramatique",
+            "subTitleIndivisible": null
+          },
+          "medias": [
+            {
+              "type": "IMAGE",
+              "height": 272,
+              "width": 352,
+              "format": "image/jpeg",
+              "name": "STD_298296.jpg",
+              "imgType": "STD",
+              "copyright": null,
+              "rank": 1,
+              "id": 191281,
+              "updateDate": "2012-09-10T21:44:25.000+0200",
+              "path": "plmphoto:/STD/14876/STD_298296.jpg"
+            },
+            {
+              "type": "IMAGE",
+              "height": 394,
+              "width": 700,
+              "format": "image/jpeg",
+              "name": "169_298296.jpg",
+              "imgType": "STD169",
+              "copyright": null,
+              "rank": 1,
+              "id": 191284,
+              "updateDate": "2013-09-23T12:07:47.000+0200",
+              "path": "plmphoto:/169/14876/169_298296.jpg"
+            },
+            {
+              "type": "IMAGE",
+              "height": 600,
+              "width": 800,
+              "format": "image/jpeg",
+              "name": "ANT_1075478_1_804.jpg",
+              "imgType": "STD",
+              "copyright": null,
+              "rank": 1,
+              "id": 291889,
+              "updateDate": "2012-10-05T17:33:41.000+0200",
+              "path": "atgphoto:/804/jpg/ANT_1075478_1_804.jpg"
+            },
+            {
+              "type": "IMAGE",
+              "height": 576,
+              "width": 1024,
+              "format": "image/jpeg",
+              "name": "ANT_1075478_1_412.jpg",
+              "imgType": "STD169",
+              "copyright": null,
+              "rank": 1,
+              "id": 291893,
+              "updateDate": "2012-10-05T17:33:41.000+0200",
+              "path": "atgphoto:/412/jpg/ANT_1075478_1_412.jpg"
+            },
+            {
+              "type": "IMAGE",
+              "height": 426,
+              "width": 964,
+              "format": "image/jpeg",
+              "name": "MEA_28153194_298288.jpg",
+              "imgType": "MEAEUREKA",
+              "copyright": null,
+              "rank": 1,
+              "id": 12652568,
+              "updateDate": "2014-09-26T18:13:43.000+0200",
+              "path": "plmphoto:/QT/MEA_28153194_298288.jpg"
+            },
+            {
+              "type": "IMAGE",
+              "height": 426,
+              "width": 964,
+              "format": "image/jpeg",
+              "name": "MEA_28153194_298288.jpg",
+              "imgType": "MEASOIR",
+              "copyright": null,
+              "rank": 1,
+              "id": 12652568,
+              "updateDate": "2014-09-26T18:13:43.000+0200",
+              "path": "plmphoto:/QT/MEA_28153194_298288.jpg"
+            },
+            {
+              "type": "IMAGE",
+              "height": 360,
+              "width": 1400,
+              "format": "image/jpeg",
+              "name": "05_10_theartiste.jpg",
+              "imgType": "CARWEB",
+              "copyright": null,
+              "rank": 1,
+              "id": 12752996,
+              "updateDate": "2014-09-29T12:19:57.000+0200",
+              "path": "plmphoto:/MWB/05_10_theartiste.jpg"
+            }
+          ],
+          "color": "0",
+          "productionNationality": "France - Belgique",
+          "productionYear": "2011",
+          "updateDate": "2014-12-08T20:12:08.000+0100",
+          "creationDate": null,
+          "synopsis": "En 1927, un acteur, vedette du cinéma muet, sombre dans l'oubli avec l'arrivée du parlant et assiste à l'ascension irrésistible d'une ancienne figurante.",
+          "mediumSynopsis": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma muet, mais l'irruption du parlant va mettre un terme brutal à sa carrière. L'acteur ne tourne plus et sombre dans l'oubli. A l'inverse, Peppy Miller, une jeune figurante, devient la nouvelle étoile de Hollywood...",
+          "longSynopsis": null,
+          "id": 585877,
+          "parentId": null,
+          "num": 1,
+          "members": {
+            "2": {
+              "id": 2,
+              "function": "Acteur",
+              "rank": 12,
+              "prefix": "Avec : ",
+              "persons": [
+                {
+                  "lastName": "Dujardin",
+                  "firstName": "Jean",
+                  "rank": 1,
+                  "id": 1477,
+                  "awards": [
+                    {
+                      "festivalId": 10,
+                      "festivalName": "Oscars",
+                      "festivalCountry": "Etats-Unis",
+                      "festivalPlace": null,
+                      "year": 2012,
+                      "awardId": 11,
+                      "awardName": "Oscar du meilleur acteur",
+                      "order": 11
+                    }
+                  ]
+                },
+                {
+                  "lastName": "Bejo",
+                  "firstName": "Bérénice",
+                  "rank": 2,
+                  "id": 1622,
+                  "awards": [
+                    {
+                      "festivalId": 7,
+                      "festivalName": "César",
+                      "festivalCountry": "France",
+                      "festivalPlace": null,
+                      "year": 2012,
+                      "awardId": 12,
+                      "awardName": "César de la meilleur actrice",
+                      "order": 12
+                    }
+                  ]
+                },
+                {
+                  "lastName": "Goodman",
+                  "firstName": "John",
+                  "rank": 3,
+                  "id": 1018,
+                  "awards": null
+                },
+                {
+                  "lastName": "Cromwell",
+                  "firstName": "James",
+                  "rank": 4,
+                  "id": 25450,
+                  "awards": null
+                },
+                {
+                  "lastName": "Pyle",
+                  "firstName": "Missy",
+                  "rank": 5,
+                  "id": 17557,
+                  "awards": null
+                },
+                {
+                  "lastName": "Miller",
+                  "firstName": "Penelope Ann",
+                  "rank": 6,
+                  "id": 16975,
+                  "awards": null
+                },
+                {
+                  "lastName": "Tulloch",
+                  "firstName": "Bitsie",
+                  "rank": 7,
+                  "id": 6961,
+                  "awards": null
+                },
+                {
+                  "lastName": "Grant",
+                  "firstName": "Beth",
+                  "rank": 8,
+                  "id": 17187,
+                  "awards": null
+                },
+                {
+                  "lastName": "Pankin",
+                  "firstName": "Stuart",
+                  "rank": 9,
+                  "id": 6958,
+                  "awards": null
+                },
+                {
+                  "lastName": "Margulies",
+                  "firstName": "Joshua",
+                  "rank": 10,
+                  "id": 6960,
+                  "awards": null
+                },
+                {
+                  "lastName": "Laren",
+                  "firstName": "Michael",
+                  "rank": 11,
+                  "id": 6956,
+                  "awards": null
+                },
+                {
+                  "lastName": "Dean",
+                  "firstName": "Calvin",
+                  "rank": 12,
+                  "id": 6952,
+                  "awards": null
+                }
+              ]
+            },
+            "4": {
+              "id": 4,
+              "function": "Réalisateur",
+              "rank": 1,
+              "prefix": "De : ",
+              "persons": [
+                {
+                  "lastName": "Hazanavicius",
+                  "firstName": "Michel",
+                  "rank": 1,
+                  "id": 23711,
+                  "awards": [
+                    {
+                      "festivalId": 10,
+                      "festivalName": "Oscars",
+                      "festivalCountry": "Etats-Unis",
+                      "festivalPlace": null,
+                      "year": 2012,
+                      "awardId": 8,
+                      "awardName": "Oscar du meilleur réalisateur",
+                      "order": 8
+                    },
+                    {
+                      "festivalId": 7,
+                      "festivalName": "César",
+                      "festivalCountry": "France",
+                      "festivalPlace": null,
+                      "year": 2012,
+                      "awardId": 9,
+                      "awardName": "César du meilleur réalisateur",
+                      "order": 9
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "partners": {
+            "20": {
+              "name": "Allociné",
+              "id": 20,
+              "opinions": [
+                {
+                  "type": "NOTE_PRESSE",
+                  "rating": 4,
+                  "name": null,
+                  "recommended": true,
+                  "opinion": null
+                }
+              ]
+            },
+            "25": {
+              "name": "Télérama",
+              "id": 25,
+              "opinions": [
+                {
+                  "type": "NOTE_TELERAMA",
+                  "rating": 2,
+                  "name": "Critique",
+                  "recommended": true,
+                  "opinion": "Le film multiprimé des deux côtés de l'Atlantique, devenu un phénomène ! Michel Hazanavicius rend hommage au septième art, à ses débuts, en noir et blanc et muet. Jean Dujardin, en star déchue, apporte son charme facétieux à cette comédie nostalgique."
+                }
+              ]
+            },
+            "26": {
+              "name": "Télécâble Sat",
+              "id": 26,
+              "opinions": [
+                {
+                  "type": "NOTE_ETOILE",
+                  "rating": 4,
+                  "name": "Critique",
+                  "recommended": true,
+                  "opinion": "Un film muet, en noir et blanc, dans la grande tradition du genre : un défi osé, brillamment relevé. Les images sont belles, la musique entraînante, le scénario plein d'humour. Cinq oscars, six César et prix d'interprétation à Cannes pour Jean Dujardin, qui forme un duo formidable avec Bérénice Bejo."
+                }
+              ]
+            },
+            "44": {
+              "name": "SensCritique",
+              "id": 44,
+              "opinions": [
+                {
+                  "type": "NOTE_SENSCRIT",
+                  "rating": 6.8,
+                  "name": null,
+                  "recommended": true,
+                  "opinion": null
+                }
+              ]
+            }
+          },
+          "tagsByType": {
+            "GENRE_CANAL": [
+              {
+                "id": 1,
+                "label": "Cinéma"
+              }
+            ],
+            "SOUS_GENRE_CANAL": [
+              {
+                "id": 20,
+                "label": "Film Comédie dramatique"
+              }
+            ]
+          },
+          "totalEpisode": null,
+          "subObject": null,
+          "lang": "fr",
+          "version": "20141208191208",
+          "awards": [
+            {
+              "festivalId": 10,
+              "festivalName": "Oscars",
+              "festivalCountry": "Etats-Unis",
+              "festivalPlace": null,
+              "year": 2012,
+              "awardId": 2,
+              "awardName": "Oscar du meilleur film",
+              "order": 2
+            },
+            {
+              "festivalId": 7,
+              "festivalName": "César",
+              "festivalCountry": "France",
+              "festivalPlace": null,
+              "year": 2012,
+              "awardId": 3,
+              "awardName": "César du meilleur film",
+              "order": 3
+            }
+          ],
+          "ratingCsa": 1,
+          "data": null
+        }
+
+
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+
++ response 406 (application/json)
+
+        {
+            "errorCode":"406",
+            "message":"No locale found for content [2798845] with locale [es]"
+        }
+
+## See also [/api/contents/{id}/seealso]
+Return the list of the "See Also" programs attached to the given id
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+
+### Retrieve a content see also [GET]
++ Response 200 (application/json)
+
+        [
+        2798846,
+        2798847
+        2798848,
+        2798849
+        ]
+
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+# Group Identity
+
+Identity API provide a way to get the BDDPe object from the CableLabs provider and asset id.
+It provides additional information such as external content overloading.
+
+## Get current version [/api/identity/currentVersion]
+Return the current version in order to use the identity list API
+
+### Retrieve external id list from a content id [GET]
++ Response 200 (application/json)
+
+        11944145
+
+## Get external ids & overload [/api/identity/edito/{bddpId}]
+Return if found the list of external id registred for the given content id
+
++ Parameters
+    + bddpId (required, string, `585877`) ... Number `bddpId` the content id
+
+### Retrieve external id list from a content id [GET]
++ Response 200 (application/json)
+
+        [
+          {
+            "providerId": "canal.fr",
+            "assetID": "1075478_1_VR_HD_MTBD",
+            "contentId": 585877,
+            "version": 105189
+          },
+          {
+            "providerId": "orange.com",
+            "assetID": "THEARTISTXXW0058364Z",
+            "contentId": 585877,
+            "version": 134996
+          }
+        ]
+
+## List of external id [/api/identity/external/?version={version}&limit={limit}&page={page}]
+Return the list of external id added or modified since the last given version param
+
+### Get update [GET]
+
++ Parameters
+    + version (required, number, `20141123101010`) ... String representing the version that will be used to filter the returned objects.
+    + limit (optional, number, `10`) ... The number of elements retuned limit
+    + page (optional, number, `2`) ... The page to be returned
+
++ Response 200 (application/json)
+
+        {
+          "data": [
+            {
+              "providerId": "ANT",
+              "assetID": "1081101_134",
+              "contentId": 1072121,
+              "version": 84252
+            },
+            {
+              "providerId": "ANT",
+              "assetID": "1081101_135",
+              "contentId": 1072119,
+              "version": 84253
+            },
+            {
+              "providerId": "tvmelody.com",
+              "assetID": "77515785",
+              "contentId": 738178,
+              "version": 84254
+            }
+          ],
+          "paging": {
+            "previous": null,
+            "next": "http://127.0.0.1:8080/api/identity/external/?limit=3&page=1&version=84254",
+            "nbElement": null
+          }
+        }
+
+
+## External Id to Bddp Id [/api/identity/external/{providerId}/{assetId}]
+Return if found the BDDP Id of the given id for the partner
+
++ Parameters
+    + providerId (required, string, `orange.com`) ... Number `providerId` the provider id
+    + assetId (required, string, `KITDESU0143W0084780Z`) ... String `assetId` the asset id.
+
+
+### Retrieve a content from an external id [GET]
++ Response 200 (application/json)
+
+        {
+          "providerId": "canal.fr",
+          "assetID": "1075478_1_VR_HD_MTBD",
+          "contentId": 585877,
+          "version": 105189
+        }
+
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+# Group Overload
+
+## List of overloads  [/api/overloads/?version={version}&limit={limit}&page={page}]
+Return the list of overloads added or modified since the last given version param
+
+### Get update [GET]
+
++ Parameters
+    + version (required, number, `20141123101010`) ... String representing the version that will be used to filter the returned objects.
+    + limit (optional, number, `10`) ... The number of elements retuned limit
+    + page (optional, number, `2`) ... The page to be returned
+
++ Response 200 (application/json)
+
+        {
+          "data": [
+            {
+              "providerId": "canal.fr",
+              "assetId": "1075478_1_VR_HD_MTBD",
+              "overload": {
+                "objectType": null,
+                "contentType": null,
+                "itemType": null,
+                "titles": {
+                    "originalTitle": null,
+                    "epgTitle": null,
+                    "titleDivisible": null,
+                    "titleIndivisible": null,
+                    "subTitleDivisible": null
+                },
+                "medias": [],
+                "color": null,
+                "productionNationality": null,
+                "productionYear": null,
+                "updateDate": null,
+                "creationDate": null,
+                "synopsis": "Surcharge données de base. The Artist",
+                "mediumSynopsis": null,
+                "longSynopsis": null,
+                "id": null,
+                "parentId": null,
+                "num": null,
+                "members": null,
+                "partners": null,
+                "tagsByType": null,
+                "totalEpisode": null,
+                "subObject": null,
+                "lang": "fr",
+                "version": null,
+                "awards": null,
+                "ratingCsa": null,
+                "data": null
+              },
+              "version": "20141215083759"
+            }
+          ],
+          "paging": {
+            "previous": null,
+            "next": "http://127.0.0.1:8080/api/overloads/?limit=1&page=1&version=20141215083759",
+            "nbElement": null
+          }
+        }
+
+
+
+## By external id [/api/overloads/external/{providerId}/{assetId}]
+Return the overload defined for the given external id
+
++ Parameters
+    + providerId (required, string, `orange.com`) ... Number `providerId` the provider id
+    + assetId (required, string, `KITDESU0143W0084780Z`) ... String `assetId` the asset id.
+
+### Retrieve an overload [GET]
++ Response 200 (application/json)
+
+
+        {
+          "providerId": "orange.com",
+          "assetId": "THEARTISTXXW0058364Z",
+          "contentId": 585877,
+          "overload": {
+            "titles": {},
+            "synopsis": "Surcharge données de base. The 2",
+            "lang": "fr"
+          },
+          "version": "20131215083759",
+          "deleted": false
+        }
+
+
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+## Bulk by external id [/api/overloads/bulk/external]
+    Return the overload for the given external id if found
+
+
+### Retrieve overloads [POST]
++ Request (application/json)
+
+        [
+            {
+                "providerId": "orange.com",
+                "assetId": "THEARTISTXXW0058364Z"
+            },
+            {
+                "providerId": "partner1",
+                "assetId": "externalId"
+            }
+        ]
+
+
++ Response 200 (application/json)
+
+        [
+            {
+                "providerId": "orange.com",
+                "assetId": "THEARTISTXXW0058364Z",
+                "contentId": 585877,
+                "overload": {
+                    "titles": {},
+                    "synopsis": {
+                        "small": "Surcharge données de base. The 2"
+                    },
+                    "lang": "fr"
+                },
+                "version": "20131215093759",
+                "deleted": false
+            }
+        ]
+
+## By content id [/api/overloads/edito/{contentId}]
+Return the list of overload defined for the given content id
+
++ Parameters
+    + contentId (required, biginteger, `585877`) ... Number `contentId` the content id
+
+### Retrieve overloads [GET]
++ Response 200 (application/json)
+
+
+
+        [
+          {
+            "providerId": "orange.com",
+            "assetId": "THEARTISTXXW0058364Z",
+            "contentId": 585877,
+            "overload": {
+              "titles": {},
+              "synopsis": "Surcharge données de base. The 2",
+              "lang": "fr"
+            },
+            "version": "20131215083759",
+            "deleted": false
+          }
+        ]
+        
+## Bulk by content id [/api/overloads/bulk/edito]
+    Return the overload for the given content ids if found
+
+
+### Retrieve overloads [POST]
++ Request (application/json)
+
+        [
+            585877,
+            987564
+        ]
+
+
++ Response 200 (application/json)
+
+        [
+            {
+                "providerId": "orange.com",
+                "assetId": "THEARTISTXXW0058364Z",
+                "contentId": 585877,
+                "overload": {
+                    "titles": {},
+                    "synopsis": {
+                        "small": "Surcharge données de base. The 2"
+                    },
+                    "lang": "fr"
+                },
+                "version": "20131215093759",
+                "deleted": false
+            },
+            {
+                "providerId": "provider.com",
+                "assetId": "THEARTISTXXW0123ABC",
+                "contentId": 987564,
+                "overload": {
+                    "titles": {},
+                    "synopsis": {
+                        "small": "Surcharge données de base. The 2"
+                    },
+                    "lang": "fr"
+                },
+                "version": "20131215093759",
+                "deleted": false
+            }
+        ]        
+
+# Group Search
+
+This API provide search facilities
+
+## Lists [/api/search/list?limit={limit}&page={page}]
+Search for lists
+
++ Parameters
+    + limit (optional, number, `10`) ... The number of elements retuned limit
+    + page (optional, number, `2`) ... The page to be returned
+
+### Get lists [GET]
++ Response 200 (application/json)
+
+
+        {
+          "data": [
+            {
+              "objectType": "LIST",
+              "contentType": "AUTRE",
+              "itemType": "SHOW",
+              "titles": {
+                "epgTitle": "Séries & fictions1",
+                "titleDivisible": "Séries & fictions1",
+                "subTitleDivisible": "Divertissement"
+              },
+              "synopsis": {},
+              "updateDate": "2015-02-05T09:48:10.000+0100",
+              "id": 4712800,
+              "lang": "fr",
+              "version": "20150205084810",
+              "ratingCSA": 4,
+              "duration": "0",
+              "boost": 1,
+              "data": {
+                "itemType": "list",
+                "id": "6Play_chaine_M6_Series&Fictions",
+                "revision": 1416850656184,
+                "title": "Séries & fictions1",
+                "creationDate": "2014-02-20",
+                "ratingCSA": 4,
+                "ageRange": 2,
+                "idKey": "6Play_chaine_M6_Series&Fictions",
+                "tags": [
+                  {
+                    "type": "CLASSIFICATION",
+                    "name": "Csat_CornerChaine_M6",
+                    "displayName": "Csat_CornerChaine_M6"
+                  }
+                ],
+                "channel": {
+                  "itemType": "externalChannel",
+                  "id": "M6"
+                },
+                "maxResult": 2000,
+                "rules": [
+                  {
+                    "id": "10100006",
+                    "itemType": "searchRule",
+                    "maxResult": 2000,
+                    "query": "tags_CLASSIFICATION:\\/6Play\\/Chaines\\/M6\\/6Play\\ \\-\\ Séries&Fictions* AND (itemType:movie OR itemType:serie OR itemType:season)"
+                  }
+                ]
+              }
+            }
+          ],
+          "paging": {
+            "previous": "http://172.30.95.200:8080/api/search/list?Authorization=4ADD57713B2E8C2151C42E3D7D326&limit=1&page=1",
+            "next": "http://172.30.95.200:8080/api/search/list?Authorization=4ADD57713B2E8C2151C42E3D7D326&limit=1&page=3"
+          }
+        }
+
+
+
+
+
+# Group Bulk
+In order to perform the same operation on multiple object we provide a Bulk API with these operation :
+
+- See also
+
+## See also [/api/bulk/seealso]
+Return the seealso information for the given list of content id
+
+### Create a Gist [POST]
+Return the seeAlso for the given content id list. If a given content id is not found it will not appear in the response structure.
+
++ Request (application/json)
+
+        [4431342,4431343]
+
++ Response 200 (application/json)
+
+        {
+          "4431342": [
+            4408701,
+            2971485
+          ],
+          "4431343": [
+            4408701,
+            2971485
+          ]
+        }
+
+# Group Program
+
+## Program [/api/programs/{providerId}/{assetId}]
+Return a single Program object
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+
+### Retrieve a program [GET]
++ Response 200 (application/json)
+
+        {
+            "objectType": "UNIT",
+            "contentType": "SERIE",
+            "titles": {
+                "originalTitle": "Kit de survie",
+                "epgTitle": "Kit de survie",
+                "title": "Kit de survie",
+                "subTitle": null
+            },
+            "longAccroche": "Edouard et Joséphine doivent réconcilier leurs parents fâchés s'ils veulent conserver leur confort. La mission s'avère complexe...",
+            "accroche": "Les parents Thoraval sont fâchés, les enfants s'inquiètent.",
+            "color": "1",
+            "productionNationality": "France",
+            "productionYear": "2012",
+            "updateDate": "2014-11-23T00:00:00.000+0100",
+            "creationDate": null,
+            "synopsis": "Les parents Thoraval sont fâchés, les enfants s'inquiètent.",
+            "mediumSynopsis": "Les parents Thoraval sont fâchés, les enfants s'inquiètent.",
+            "longSynopsis": null,
+            "id": 2798845,
+            "parentId": null,
+            "num": 1,
+            "totalEpisode": 52,
+            "lang": "fr",
+            "version": "20141122230000"
+        }
+
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+
++ response 406 (application/json)
+
+        {
+            "errorCode":"406",
+            "message":"No locale found for content [2798845] with locale [es]"
+        }
+
+### Update a Program [PUT]
++ Response 200 (application/json)
+
+## Tags [/api/programs/{id}/tags]
+Return a single Program object
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+
+### Retrieve program tags [GET]
++ Response 200 (application/json)
+
+        [
+            {
+                "type" : "GENRE_CANAL",
+                "id": 3,
+                "label": "Jeunesse"
+            },{
+                "type" : "SOUS_GENRE_CANAL",
+                "id": 81,
+                "label": "Série Animation"
+            }
+        ]
+
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+## Tag [/api/programs/{id}/tags/{tagId}]
+Return a single Program object
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+    + tagId (required, number, `81`) ... Numeric `id` of the tag to perform action with.
+
+
+### Update the program tags list [PUT]
++ Response 200 (application/json)
+
+### Add a tag link [POST]
++ Response 200 (application/json)
+
+### Delete a tag link [DELETE]
++ Response 200 (application/json)
+
+## Function [/api/programs/{id}/members]
+Return the list of program members grouped by function
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+
+### Retrieve program tags [GET]
++ Response 200 (application/json)
+
+        {
+          "4": {
+            "id": 4,
+            "function": "Réalisateur",
+            "rank": 1,
+            "prefix": "De : ",
+            "persons": [
+              {
+                "lastName": "Vidal",
+                "firstName": "Régis",
+                "rank": 1,
+                "id": 116330
+              }
+            ]
+          }
+        }
+
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+## Members [/api/programs/{id}/members/{function}]
+Return the list of program members for the given function
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+    + function (required, number, `4`) ... Numeric `function`
+
+### Retrieve members [GET]
++ Response 200 (application/json)
+
+        [
+            {
+            "lastName": "Vidal",
+            "firstName": "Régis",
+            "rank": 1,
+            "id": 116330
+            }
+        ]
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+## Members [/api/programs/{id}/members/{function}/{personId}]
+Return the list of program members for the given function
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+    + function (required, number, `4`) ... Numeric `function`
+    + personId (required, number, `116330`) ... Numeric `mediaId` of the Media to perform action with.
+
+
+## Medias [/api/programs/{id}/medias/]
+Return the list of program members for the given function
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+
+### Retrieve media [GET]
++ Response 200 (application/json)
+
+        [
+          {
+            "type": "IMAGE",
+            "height": 600,
+            "width": 800,
+            "format": "image/jpeg",
+            "name": "orange.com_KITDESU0143W0084780Z_804.jpg",
+            "imgType": "STD",
+            "copyright": null,
+            "rank": 1,
+            "id": 5298343,
+            "updateDate": "2013-12-14T00:00:00.000+0100",
+            "path": "atgphoto:/804/jpg/orange.com_KITDESU0143W0084780Z_804.jpg"
+          },
+          {
+            "type": "IMAGE",
+            "height": 576,
+            "width": 1024,
+            "format": "image/jpeg",
+            "name": "orange.com_KITDESU0143W0084780Z_412.jpg",
+            "imgType": "STD169",
+            "copyright": null,
+            "rank": 1,
+            "id": 5298345,
+            "updateDate": "2013-12-14T00:00:00.000+0100",
+            "path": "atgphoto:/412/jpg/orange.com_KITDESU0143W0084780Z_412.jpg"
+          }
+        ]
+
++ response 404 (application/json)
+
+        {
+            "errorCode":"404",
+            "message":"No such resource."
+        }
+
+## Media [/api/programs/{id}/medias/{mediaId}]
+Return the list of program members for the given function
+
++ Parameters
+    + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+    + mediaId (required, number, `5298345`) ... Numeric `mediaId` of the Media to perform action with.
+
+
+### Attach a media to the given program [POST]
++ Response 200 (application/json)
+
+### Delete the program media list [DELETE]
++ Response 200 (application/json)
+
+# Group Channel
+
+## Channel [/api/channel/{id}]
+When `id` is given, the operation target a single channel corresponding to this id.
+
++ Parameters
+    + id (required, number, `56379`) ... Numeric `id` of the channel.
+
+### Retrieve a channel [GET]
+Return a single channel object
++ Response 200 (application/json)
+
+        {
+            "id": "56379",
+            "name": "CINE+ HD",
+            "definition": "HD",
+            "beginDate": "2013-12-14T00:00:00.000+0100";
+            "endDate": "2016-12-14T00:00:00.000+0100",
+            "creationDate": "2013-10-14T00:00:00.000+0100",
+            "lastUpdate": "2013-10-14T00:00:00.000+0100",
+            "related" : {
+                "sd": "56377",
+                "master": "56378"
+            }
+        }
+
++ response 204 (application/json)
+
+### Update a Channel [PUT]
+Update or create a channel object.
+Preconditions :
+If the channel id doesn't exist in the base, every field must be filled.
+If a master id is given, it has to be present in the base or reference the new channel (the channel added).
+If a required field is given for update, it can't be null.
++ Request (application/json)
+
+        {
+            "id": "56379",
+            "name": "CINE+ HD",
+            "definition": "HD",
+            "beginDate": "2013-12-14T00:00:00.000+0100";
+            "endDate": "2016-12-14T00:00:00.000+0100",
+            "creationDate": "2013-10-14T00:00:00.000+0100",
+            "lastUpdate": "2014-12-14T00:00:00.000+0100",
+            "master": "56890"
+        }
+
++ Request (application/json)
+
+        {
+            "id": "56379",
+            "master" : "56379"
+        }
+
++ Request (application/json)
+
+        {
+            "id": "56379",
+            "creation_date": "2013-02-31T14:32:22Z",
+        }
+
++ Response 200 (application/json)
+
+        {
+            "id": "56379",
+            "name": "CINE+ HD",
+            "definition": "HD",
+            "begin_date": "2014-03-31T14:32:22Z";
+            "end_date": "2016-03-31T14:32:22Z",
+            "creation_date": "2014-02-31T14:32:22Z",
+            "last_update": "2016-02-29T14:32:22Z",
+            "related" : {
+                "sd": "56377",
+                "master": "56378"
+            }
+        }
+
++ Response 201 (application/json)
+
+        {
+            "id": "56379",
+            "name": "CINE+ HD",
+            "definition": "HD",
+            "begin_date": "2014-03-31T14:32:22Z";
+            "end_date": "2016-03-31T14:32:22Z",
+            "creation_date": "2014-02-31T14:32:22Z",
+            "last_update": "2016-02-29T14:32:22Z",
+            "related" : {
+                "sd": "56377",
+                "master": "56378"
+            }
+        }
+
++ Response 406
+
++ Response 412
+
+# Group Data Api
+
+The data api part is a temporary part which group all the author features of the bddp.
+
+The main focus for now is to be as close as the existing app in PHP.
+All example are extracted from a local Vagrant VM available on github. (github@/canalplus/dedoutilauteurinfra)
+
+All queries (GET) for listing/searching supports those 3 paramters : 
+    page : the page number
+    count : the number of result per page
+    orderBy : the field(s) the service should sort on.
+
+e.g : /dataapi/articles?page=1&count=10&orderBy[title]=DESC&orderBy[created_at]=ASC
+
+If any of those parameter are not supported by the endpoint. It will be notified within the documentation of said endpoint.
+
+## Program [/dataapi/programs/{id}]
+
+A single Program object. It is already exposed but have to be copied for a different output.
+
++ Parameters
+    + id (number, required, `id`) ... Numeric `id` of the Program
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "id": 180914,
+                "title": "L'empreinte du crime",
+                "undividable_title": "S2 - Ep2",
+                "subtype": "Série Policière",
+                "nationality": "Allemagne",
+                "year": 2000,
+                "length": 45,
+                "abstract": "A Hambourg, les enquêteurs sont confrontés à une mystérieuse série de meurtres d'étudiantes. Le tueur signe ses crimes en laissant sur les lieux du crime une rose rouge et un disque de Puccini. Born, chargé de l'affaire, connaît bien le milieu universitaire, car il intervient régulièrement lors de conférences thématiques. Dans son auditoire se trouve la nièce du professeur Korda, Melanie. Celle-ci lui fait des avances répétées, mais se heurte à un refus clair et net. Elle se tourne alors vers Mirco Schmeisser, un étudiant un peu perturbé...",
+                "created_at": "2013-12-16T13:53:00+0100",
+                "updated_at": "2014-11-27T11:55:41+0100"
+            }
+
+### Retrieve a Program [GET]
+
++ Response 200
+
+    [Program][]
+
+## List of Programs [/dataapi/programs?{title,page,count,orderBy}]
+
+A collection of Program objects
+
++ Parameters
+
+    + title (string) ... Title to search for.
+    + page (int) ... Page number (Endpoint is paginated).
+    + count (int) ... Max number of items to return.
+    + orderBy (associative array) ... Fields to order by.
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "page": 1,
+                "max_per_page": 10,
+                "last_page": false,
+                "results": [
+                    {
+                        "id": 185457,
+                        "title": "Le retour des sept",
+                        "subtype": "Film Western",
+                        "nationality": "Etats-Unis",
+                        "year": 1966,
+                        "length": 90,
+                        "abstract": "Un village mexicain est assailli et investi par des bandits qui emmènent les hommes dans le désert, vers une destination inconnue. Parmi les prisonniers se trouve Chico, un ancien tueur, célèbre pour avoir jadis, en compagnie de six autres pistoleros, défendu un village. Sa femme, Petra, part à la recherche de ses anciens compagnons d'aventures. Deux d'entre eux seulement sont encore vivants, Chris et Vin, qui recrutent à la hâte quatre sbires et se mettent en campagne. Ils viennent à la rescousse des villageois et entament une traque pour retrouver les bandits et leurs otages. Leur mission donne lieu à une lutte sanglante...",
+                        "created_at": "2012-11-12T14:10:00+0100",
+                        "updated_at": "2014-11-27T11:55:41+0100"
+                    },
+                    {
+                        "id": 185458,
+                        "title": "V6",
+                        "subtype": "Mag. Sport",
+                        "length": 25,
+                        "created_at": "2012-08-04T00:47:51+0200",
+                        "updated_at": "2012-08-04T00:47:51+0200"
+                    },
+                    {
+                        "id": 185459,
+                        "title": "Le Renard",
+                        "undividable_title": "S13 - Ep9",
+                        "subtype": "Série Policière",
+                        "nationality": "Allemagne",
+                        "year": 1989,
+                        "length": 52,
+                        "abstract": "Un ancien camarade de classe de Gerd Heymann est assassiné après un banquet. Avec l'aide de Kress, celui-ci entame des recherches...",
+                        "created_at": "2014-02-03T11:04:36+0100",
+                        "updated_at": "2014-11-27T11:55:41+0100"
+                    },
+                    {
+                        "id": 185460,
+                        "title": "Les destins du coeur",
+                        "undividable_title": "Episode 288",
+                        "subtype": "Série Comédie dramatique",
+                        "nationality": "Italie",
+                        "length": 52,
+                        "abstract": "Le professeur Corradi est kidnappé par des gangsters qui exigent qu'il opère leur chef, blessé d'une balle en plein ventre. Sous la menace d'un revolver, Corradi est emmené à la campagne où il doit pratiquer l'intervention sur une table de ferme avec les moyens du bord et sans anesthésie...",
+                        "created_at": "2014-06-11T22:10:04+0200",
+                        "updated_at": "2014-06-11T22:10:04+0200"
+                    },
+                    {
+                        "id": 622605,
+                        "title": "Urban Hit 30",
+                        "subtype": "Clips",
+                        "length": 120,
+                        "created_at": "2012-09-19T12:38:41+0200",
+                        "updated_at": "2012-09-19T12:38:41+0200"
+                    },
+                    {
+                        "id": 622612,
+                        "title": "Playlist",
+                        "subtype": "Clips",
+                        "length": 15,
+                        "created_at": "2012-09-19T12:38:41+0200",
+                        "updated_at": "2012-09-19T12:38:41+0200"
+                    },
+                    {
+                        "id": 185461,
+                        "title": "Brigade du crime",
+                        "undividable_title": "S9 - Ep4",
+                        "subtype": "Série Policière",
+                        "nationality": "Allemagne",
+                        "year": 2006,
+                        "length": 52,
+                        "abstract": "Le cadavre de Marion Geller est retrouvé devant la vitrine d'un magasin d'électronique qui a visiblement été cambriolé durant la nuit. Aurait-elle surpris les vandales en plein braquage ? Son époux, Karsten Geller, le propriétaire de la boutique, prétend ne pas connaître les raisons de sa présence ici en pleine nuit. Mais les enquêteurs trouvent bientôt un message compromettant sur son répondeur. Son épouse, furieuse, l'avait en effet contacté et lui avait donné rendez-vous au magasin pour une explication sérieuse. Karsten Geller devient le principal suspect...",
+                        "created_at": "2014-12-02T16:59:20+0100",
+                        "updated_at": "2014-12-01T21:27:35+0100"
+                    },
+                    {
+                        "id": 185462,
+                        "title": "Kickboxer 3 : trafic à Rio",
+                        "subtype": "Film Action",
+                        "nationality": "Etats-Unis",
+                        "year": 1992,
+                        "length": 90,
+                        "abstract": "David Sloan débarque à Rio. Cette cité est tout entière vouée aux plaisirs et au spectacle, malgré l'extrême pauvreté de la population. Il doit y disputer un combat de kick-boxing contre un redoutable champion argentin, le terrible Eric Martine, dont la réputation est pitoyable. En attendant, et en compagnie de son entraîneur Xian, il sillonne les bas-fonds de Rio à la recherche d'Isabella, une jeune fille enlevée par un vaste réseau de traite des Blanches. Une fois qu'il aura découvert ceux qui, dans l'ombre, tirent les ficelles de cet odieux trafic, Sloan leur fera, à n'en pas douter, passer l'envie de réitérer leurs forfaits...",
+                        "created_at": "2013-09-27T23:02:27+0200",
+                        "updated_at": "2014-11-27T11:55:41+0100"
+                    },
+                    {
+                        "id": 185404,
+                        "title": "Brigade du crime",
+                        "undividable_title": "S9 - Ep11",
+                        "subtype": "Série Policière",
+                        "nationality": "Allemagne",
+                        "year": 2006,
+                        "length": 52,
+                        "abstract": "La jeune Peggy Schweizer est sous le choc. Elle vient d'assister à l'enlèvement de son père. La police de Leipzig tente de comprendre pourquoi Hans Schweizer, célèbre politicien local, a été kidnappé. Le commissaire Hajo Trautzschke se penche alors sur un scandale qui avait défrayé la chronique il y a quelques années. Schweizer avait été impliqué, mais s'en était bien sorti. En revanche, un certain Pit Ganselmann avait écopé de neuf ans de prison...",
+                        "created_at": "2014-10-27T22:29:45+0100",
+                        "updated_at": "2014-11-27T11:55:41+0100"
+                    },
+                    {
+                        "id": 185405,
+                        "title": "Un amour de coccinelle",
+                        "subtype": "Film Comédie",
+                        "nationality": "Etats-Unis",
+                        "year": 1968,
+                        "length": 107,
+                        "abstract": "Piteux coureur automobile mais optimiste incurable, Jim Douglas entre chez un concessionnaire de voitures de sport, moins pour admirer les modèles que pour approcher la jolie vendeuse, Carole. Lorsqu'il s'apprête à rentrer chez lui, Herbie, une petite «coccinelle», le suit à la trace. Accusé de vol, Jim achète l'engin à crédit. Il découvre rapidement qu'Herbie est douée de raison et n'en fait même qu'à sa tête. Une rare qualité qui lui permet de remporter toutes les courses où l'inscrit Jim, à présent persuadé d'être devenu un grand pilote...",
+                        "created_at": "2015-02-17T11:06:07+0100",
+                        "updated_at": "2015-01-09T15:05:27+0100"
+                    }
+                ]
+            }
+
+### List all Programs [GET]
+
++ Response 200 (application/json)
+
+## Category [/dataapi/categories/{id}]
+
+In the process of creation of categories, creation date, update date, slug and automatically rewriten by application.
+Creation / Update Date are ignored.
+Slug is rewritten to be a lower-no-spacish version of category name. (still have to find which php function is being used...)
+
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Category
+
++ Model (application/json)
+
+            {
+                "id": 15,
+                "name": "toto part à la pêche",
+                "slug": "toto-part-a-la-peche",
+                "enabled": false,
+                "created_at": "2015-02-25T11:32:05+0100",
+                "updated_at": "2015-02-25T17:11:06+0100"
+            }
+
+### Retrieve a Category [GET]
+
++ Response 200
+    
+    [Category][]
+
++ Response 404
+
+    + Body
+
+            {
+              "code": 404,
+              "message": "Category with id `16` could not be found"
+            }
+
+### Update a Category [PUT]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "name": "toto part à la pêche",
+                "enabled": true
+            }
+
++ Response 200
+
+    [Category][]
+
++ Response 400
+
+    + Body
+
+            {
+                "code": 400,
+                "message": "Validation Failed",
+                "errors": {
+                    "children": {
+                        "name": {
+                            "errors": [
+                                "This value should not be blank."
+                            ]
+                        },
+                        "enabled": [],
+                        "id": [],
+                        "slug": {
+                            "errors": [
+                                "This value should not be blank."
+                            ]
+                        },
+                    "created_at": [],
+                    "updated_at": []
+                    }
+                }
+            }
+
++ Response 404
+
+    + Body
+
+            {
+                "code": 404,
+                "message": "Category with id `16` could not be found"
+            }
+
+### Remove a Category [DELETE]
+
++ Response 204
+
++ Response 404
+
+    + Body
+
+            {
+            "code": 404,
+            "message": "Category with id `17` could not be found"
+            }
+
+## List of Categories [/dataapi/categories{?id,name,slug,enable,page,count,orderBy}]
+
++ Parameters
+    
+    + id (int) ... Id of category.
+    + name (string) ... Search for the name of category.
+    + slug (string) ... Search for the slug of category.
+    + enable (int) ... Search for "actives" categories. (0 or 1)
+    + page (int) ... Page number (Endpoint is paginated).
+    + count (int) ... Max number of items to return.
+    + orderBy (associative array) ... Fields to order by.
+
++ Model (application/json)
+
+            {
+                "page": 1,
+                "max_per_page": 10,
+                "last_page": true,
+                "results": [
+                    {
+                    "id": 17,
+                    "name": "toto part à la pêche",
+                    "slug": "toto-part-a-la-peche",
+                    "enabled": true,
+                    "created_at": "2015-02-25T17:42:32+0100",
+                    "updated_at": "2015-02-25T17:42:32+0100"
+                    },
+                    {
+                    "id": 16,
+                    "name": "Chezmoi",
+                    "slug": "chezmoi",
+                    "enabled": true,
+                    "created_at": "2015-02-25T17:42:07+0100",
+                    "updated_at": "2015-02-25T17:42:07+0100"
+                    }
+                ]
+            }
+
+### List all Categories [GET]
+
++ Response 200
+
+    [List of Categories][]
+
+### Create a Category [POST]
+
++ Request (application/json)
+
+            {
+                "name": "Toto rentre à la maison",
+                "enabled": true
+            }
+
++ Response 201 (application/json)
+
++ Response 400
+
+    + Body
+
+            {
+                "code": 400,
+                "message": "Validation Failed",
+                "errors": {
+                    "children": {
+                        "name": {
+                            "errors": [
+                            "This value should not be blank."
+                        ]
+                    },
+                    "enabled": [],
+                    "id": [],
+                    "slug": {
+                        "errors": [
+                            "This value should not be blank."
+                        ]
+                    },
+                    "created_at": [],
+                    "updated_at": []
+                    }
+                }
+            }
+
+
+## Tag [/dataapi/tags/{id}]
+
+Tag also have a Slug.
+Same rules applies.
+
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Tag
+
++ Model (application/json)
+
+            {
+                "id": 12,
+                "name": "Mon Super Tag",
+                "slug": "mon-super-tag",
+                "enabled": false,
+                "created_at": "2015-02-26T10:16:54+0100",
+                "updated_at": "2015-02-26T10:16:54+0100"
+            }
+
+### Retrieve a Tag [GET]
+
++ Response 200
+
+    [Tag][]
+
++ Response 404
+
+    + Body
+
+            {
+                "code": 404,
+                "message": "Tag with id `43214` could not be found"
+            }
+
+### Create a Tag [POST]
+
++ Request (application/json)
+
+    [Tag][]
+
++ Response 201 (application/json)
+
+
++ Response 400
+
+    + Body
+
+            {
+                "code": 400,
+                "message": "The field 'name' should not be empty."
+            }
+
+
+### Update a Tag [PUT]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "name": "Jean Dudu",
+                "enabled": true
+            }
+
++ Response 200
+
+    [Tag][]
+
++ Response 400
+
+    + Body
+
+            {
+                "code": 400,
+                "message": "Validation Failed",
+                "errors": {
+                    "children": {
+                        "name": {
+                            "errors": [
+                                "This value should not be blank."
+                            ]
+                        },
+                        "enabled": [],
+                        "id": [],
+                        "slug": {
+                            "errors": [
+                                "This value should not be blank."
+                            ]
+                        },
+                        "created_at": [],
+                        "updated_at": []
+                    }
+                }
+            }
+
++ Response 404
+
+    + Body
+
+            {
+                "code": 404,
+                "message": "Tag with id `1` could not be found"
+            }
+
+### Remove a Tag [DELETE]
+
++ Response 204
+
++ Response 404
+
+    + Body
+
+            {
+                "code": 404,
+                "message": "Tag with id `1` could not be found"
+            }
+
+## List of Tags [/dataapi/tags{?page,count,orderBy}]
+
++ Model (application/json)
+
+            {
+                "page": 1,
+                "max_per_page": 10,
+                "last_page": true,
+                "results": [
+                    {
+                        "id": 12,
+                        "name": "Mon Super Tag",
+                        "slug": "mon-super-tag",
+                        "enabled": false,
+                        "created_at": "2015-02-26T10:16:54+0100",
+                        "updated_at": "2015-02-26T10:16:54+0100"
+                    }
+                ]
+            }
+
+
+### List all Tags [GET]
+
++ Paramters
+
+    + id (int) ... id of the tag
+    + name (string) ... tag name
+    + slug (string) ... slug of the tag
+    + enable (int) ... activation flag (0 or 1)
+    + page (int) ... Page number (Endpoint is paginated).
+    + count (int) ... Max number of items to return.
+    + orderBy (associative array) ... Fields to order by.
+
++ Response 200
+
+    [List of Tags][]
+
+## Media [/dataapi/media/{id}]
+
+A single Media object
+
++ Parameters
+    + id (number, required, `1`) ... Numeric `id` of the Media
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "id": 13988830,
+                "name": "73-AMAZINGSPIDERMAN.jpg",
+                "created_at": "2014-11-05T14:59:09+0100",
+                "updated_at": "2014-11-05T14:59:09+0100",
+                "uri": "autoid:/AUTOID/AUTRAW/c996/435",
+                "mime_type": "image/jpeg",
+                "format": "AUTRAW",
+                "type": "1",
+                "description": "",
+                "width": 3042,
+                "height": 1304
+            }
+
+
+### Retrieve a Media [GET]
+
++ Response 200
+
+    [Media][]
+
++ Response 404
+
+    + Body
+
+            {
+                "code": 404,
+                "message": "Media with id `12321` could not be found"
+            }
+
+
+## List of Media [/dataapi/media{?id,name,type,format,page,count,orderBy}]
+
++ Model (application/json)
+
+            {
+                "page": 1,
+                "max_per_page": 10,
+                "last_page": false,
+                "results": [
+                    {
+                        "id": 14809731,
+                        "name": "34-EDITO-INTERDITES_DECOLE.jpg",
+                        "created_at": "2014-11-28T16:37:49+0100",
+                        "updated_at": "2014-11-28T16:37:49+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/170fe3/1444",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 853
+                    },
+                    {
+                        "id": 14809733,
+                        "name": "34-EDITO-INTERDITES_DECOLE.jpg",
+                        "created_at": "2014-11-28T16:37:50+0100",
+                        "updated_at": "2014-11-28T16:37:50+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/170fe4/1445",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 853
+                    },
+                    {
+                        "id": 14032091,
+                        "name": "NORMAL-34-THE-AFFAIR.jpg",
+                        "created_at": "2014-11-06T12:12:21+0100",
+                        "updated_at": "2014-11-06T12:12:21+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/cdb5/566",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 310,
+                        "height": 413
+                    },
+                    {
+                        "id": 14656473,
+                        "name": "34-EDITO-AVIS-DE-LIGUE-1.jpg",
+                        "created_at": "2014-11-24T16:25:30+0100",
+                        "updated_at": "2014-11-24T16:25:30+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/170539/1192",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 853
+                    },
+                    {
+                        "id": 14656474,
+                        "name": "34-EDITO-AVIS-DE-LIGUE-1.jpg",
+                        "created_at": "2014-11-24T16:25:31+0100",
+                        "updated_at": "2014-11-24T16:25:31+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/17053a/1193",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 853
+                    },
+                    {
+                        "id": 14657250,
+                        "name": "34-LABEL-SOIREE-TOM-CRUISE.jpg",
+                        "created_at": "2014-11-24T17:48:50+0100",
+                        "updated_at": "2014-11-24T17:48:50+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/17053d/1196",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 853
+                    },
+                    {
+                        "id": 14514517,
+                        "name": "LEADER-34-COLLECTION-MOIS-DES-ROBOTS.jpg",
+                        "created_at": "2014-11-20T16:51:14+0100",
+                        "updated_at": "2014-11-20T16:51:14+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/170422/1102",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 853
+                    },
+                    {
+                        "id": 14514516,
+                        "name": "LEADER-34-COLLECTION-MOIS-DES-ROBOTS.jpg",
+                        "created_at": "2014-11-20T16:51:13+0100",
+                        "updated_at": "2014-11-20T16:51:13+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/170421/1101",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 853
+                    },
+                    {
+                        "id": 15279308,
+                        "name": "34-EDITO-MOIS-SPECIAL-RIPOUX-THE-SWEENEY.jpg",
+                        "created_at": "2014-12-12T12:54:30+0100",
+                        "updated_at": "2014-12-12T12:54:30+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/171eec/1849",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 853
+                    },
+                    {
+                        "id": 15236509,
+                        "name": "34-SOIREE-FOOD.jpg",
+                        "created_at": "2014-12-11T17:55:22+0100",
+                        "updated_at": "2014-12-11T17:55:22+0100",
+                        "uri": "autoid:/AUTOID/AUTMEA/171e6f/1808",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTMEA",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 853
+                    }
+                ]
+            }
+
+
+### Create a Media [POST]
+
++ Request (application/json)
+
+            {
+                "name": "my image"
+                "codemedia": "AUTTV",
+                "media": "dGVzdCBmYWtlIGJpbmFyeQ==",
+                "mimeType": "image/png"
+            }
+
++ Response 201 (application/json)
+
+
++ Response 400
+
+    + Body
+
+            {
+                "code": 400,
+                "message": "The field 'media' should not be empty."
+            }
+
++ Response 500
+
+    + Body
+
+            {
+                "code": 500,
+                "message": "An internal error has occurred while media creation."
+            }
+
+### List all Media [GET]
+
++ Parameters
+
+    + id (int) ... id of the tag
+    + name (string) ... tag name
+    + type (string) ... type of media
+    + format (string) ... format of media
+    + page (int) ... Page number (Endpoint is paginated).
+    + count (int) ... Max number of items to return.
+    + orderBy (associative array) ... Fields to order by.
+
++ Response 200
+    
+    [List of Media][]
+
+## Article [/dataapi/articles/{id}]
+
++ Parameters
+
+    + id (number, required, `1`) ... Numeric `id` of the Article
+
++ Model (application/json)
+
+            {
+                "id": 63,
+                "version": 33,
+                "current": true,
+                "created_at": "2015-01-29T16:53:15+0100",
+                "updated_at": "2015-01-29T16:53:15+0100",
+                "publication_starts_at": "2014-11-19T18:23:00+0100",
+                "publication_ends_at": "2015-01-23T12:23:00+0100",
+                "status": 3,
+                "type": 0,
+                "title": "À tomber !",
+                "internal_title": "GRAVITY",
+                "subtitle": "Une odyssée spatiale haletante doublée d’une expérience sensorielle grandiose…  Embarquez à bord du chef-d’œuvre aux 7 Oscars d’Alfonso Cuarón.",
+                "overtitle": "GRAVITY",
+                "section_title": "",
+                "ambiance": "noir",
+                "author": "bsaunier",
+                "abstract": "Une mission orbitale tourne à la catastrophe pour deux astronautes quand une pluie de débris s’abat sur leur vaisseau. Sandra Bullock au sommet de son jeu dans un film phénomène : une odyssée spatiale grandiose où la virtuosité des effets spéciaux est au service de l’exploration de l’intime. Rencontre avec son réalisateur inclassable…",
+                "validated_at": "2014-11-04T18:28:38+0100",
+                "epg_id": 1,
+                "universe": "mag-canal",
+                "brand_epg": {
+                    "id": 1,
+                    "name": "CANAL+"
+                },
+                "fragments": [
+                    {
+                        "id": 30541,
+                        "created_at": "2015-01-29T16:53:15+0100",
+                        "updated_at": "2015-01-29T16:53:15+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.title",
+                        "settings": {
+                            "text": "De “Harry Potter” à “Gravity”"
+                        },
+                    "position": 0
+                    },
+                    {
+                        "id": 30542,
+                        "created_at": "2015-01-29T16:53:15+0100",
+                        "updated_at": "2015-01-29T16:53:15+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.text",
+                        "settings": {
+                            "formattedText": {
+                                "format": "markdown",
+                                "text": "Comme ses compatriotes mexicains Alejandro Gonzalez Iñárritu et Guillermo Del Toro, Alfonso Cuarón est un réalisateur inclassable, aussi à l’aise dans le film d’auteur que dans le blockbuster. En 2001, il se fait connaître avec “Y tu mamá también”, road-movie sexy avec un Gael Garcia Bernal encore inconnu. Trois ans plus tard, Hollywood lui confie la réalisation de “Harry Potter et le prisonnier d’Azkaban”, un des meilleurs opus de la saga. En 2006, il s’essaie pour la première fois à la science-fiction avec “Les Fils de l’homme”, où il aborde un thème qu’il développera plus tard dans “Gravity” : la femme, avenir de l’humanité."
+                            },
+                            "format": "markdown",
+                            "text": "Comme ses compatriotes mexicains Alejandro Gonzalez Iñárritu et Guillermo Del Toro, Alfonso Cuarón est un réalisateur inclassable, aussi à l’aise dans le film d’auteur que dans le blockbuster. En 2001, il se fait connaître avec “Y tu mamá también”, road-movie sexy avec un Gael Garcia Bernal encore inconnu. Trois ans plus tard, Hollywood lui confie la réalisation de “Harry Potter et le prisonnier d’Azkaban”, un des meilleurs opus de la saga. En 2006, il s’essaie pour la première fois à la science-fiction avec “Les Fils de l’homme”, où il aborde un thème qu’il développera plus tard dans “Gravity” : la femme, avenir de l’humanité."
+                        },
+                        "position": 1
+                    },
+                    {
+                        "id": 30543,
+                        "created_at": "2015-01-29T16:53:15+0100",
+                        "updated_at": "2015-01-29T16:53:15+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.image",
+                        "settings": {
+                            "media": {
+                                "provider_metadata": {
+                                    "id": 13969806,
+                                    "name": "169-TRAITEMENT-1-GRAVITY-1.jpg",
+                                    "created_at": "2014-11-04T18:25:05+0100",
+                                    "updated_at": "2014-11-04T18:25:05+0100",
+                                    "uri": "autoid:/AUTOID/AUTWIDE/c66c/381",
+                                    "mime_type": "image/jpeg",
+                                    "format": "AUTWIDE",
+                                    "type": "1",
+                                    "description": "",
+                                    "width": 1257,
+                                    "height": 708
+                                },
+                                "name": "169-TRAITEMENT-1-GRAVITY-1.jpg",
+                                "enabled": false,
+                                "provider_name": "sonata.media.provider.bddpe",
+                                "provider_status": 1,
+                                "provider_reference": "13969806",
+                                "width": 1257,
+                                "height": 708,
+                                "author_name": "bsaunier",
+                                "context": "article",
+                                "updated_at": "2014-11-04T18:25:06+0100",
+                                "created_at": "2014-11-04T18:25:06+0100",
+                                "content_type": "image/jpeg",
+                                "size": 257169,
+                                "id": 77
+                            }
+                        },
+                        "position": 2
+                    },
+                    {
+                        "id": 30544,
+                        "created_at": "2015-01-29T16:53:15+0100",
+                        "updated_at": "2015-01-29T16:53:15+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.title",
+                        "settings": {
+                            "text": "“Scotcher le spectateur à son siège”"
+                        },
+                        "position": 3
+                    },
+                    {
+                        "id": 30545,
+                        "created_at": "2015-01-29T16:53:15+0100",
+                        "updated_at": "2015-01-29T16:53:15+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.text",
+                        "settings": {
+                            "formattedText": {
+                                "format": "markdown",
+                                "text": "Quand son fils Jonas, lui aussi réalisateur, lui soumet l’idée d’un astronaute à la dérive dans l’espace, Cuarón est séduit. Obsédé par l’idée de “pur  cinéma”, il souhaite “scotcher le spectateur à son siège”. Une lutte pour la survie, des émotions fortes, un suspense intenable… Le père et le fils utilisent ces ingrédients pour écrire un scénario à l’efficacité redoutable. Mais avant le tournage, le cinéaste réalise que la technologie disponible ne lui permet pas de restituer sa vision de l’espace. Il lui faudra quatre ans et demi pour mettre au point la “Light Box”, un cube éclairé de LED dans lequel évolue Sandra Bullock."
+                            },
+                            "format": "markdown",
+                            "text": "Quand son fils Jonas, lui aussi réalisateur, lui soumet l’idée d’un astronaute à la dérive dans l’espace, Cuarón est séduit. Obsédé par l’idée de “pur  cinéma”, il souhaite “scotcher le spectateur à son siège”. Une lutte pour la survie, des émotions fortes, un suspense intenable… Le père et le fils utilisent ces ingrédients pour écrire un scénario à l’efficacité redoutable. Mais avant le tournage, le cinéaste réalise que la technologie disponible ne lui permet pas de restituer sa vision de l’espace. Il lui faudra quatre ans et demi pour mettre au point la “Light Box”, un cube éclairé de LED dans lequel évolue Sandra Bullock."
+                        },
+                        "position": 4
+                    },
+                    {
+                        "id": 30546,
+                        "created_at": "2015-01-29T16:53:15+0100",
+                        "updated_at": "2015-01-29T16:53:15+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.image",
+                        "settings": {
+                            "media": {
+                                "provider_metadata": {
+                                    "id": 13969808,
+                                    "name": "169-TRAITEMENT-1-GRAVITY-2.jpg",
+                                    "created_at": "2014-11-04T18:26:02+0100",
+                                    "updated_at": "2014-11-04T18:26:02+0100",
+                                    "uri": "autoid:/AUTOID/AUTWIDE/c66e/383",
+                                    "mime_type": "image/jpeg",
+                                    "format": "AUTWIDE",
+                                    "type": "1",
+                                    "description": "",
+                                    "width": 1257,
+                                    "height": 708
+                                },
+                                "name": "169-TRAITEMENT-1-GRAVITY-2.jpg",
+                                "enabled": false,
+                                "provider_name": "sonata.media.provider.bddpe",
+                                "provider_status": 1,
+                                "provider_reference": "13969808",
+                                "width": 1257,
+                                "height": 708,
+                                "author_name": "bsaunier",
+                                "context": "article",
+                                "updated_at": "2014-11-04T18:26:02+0100",
+                                "created_at": "2014-11-04T18:26:02+0100",
+                                "content_type": "image/jpeg",
+                                "size": 378015,
+                                "id": 78
+                            }
+                        },
+                        "position": 5
+                    },
+                    {
+                        "id": 30547,
+                        "created_at": "2015-01-29T16:53:15+0100",
+                        "updated_at": "2015-01-29T16:53:15+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.title",
+                        "settings": {
+                            "text": "La performance de Sandra Bullock"
+                        },
+                    "position": 6
+                    },
+                    {
+                        "id": 30548,
+                        "created_at": "2015-01-29T16:53:15+0100",
+                        "updated_at": "2015-01-29T16:53:15+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.text",
+                        "settings": {
+                            "formattedText": {
+                                "format": "markdown",
+                                "text": "À la question : “De quoi êtes vous le plus fier dans ‘Gravity’ ?”, le réalisateur répond invariablement : “De la performance de Sandra Bullock.” “Presque tout le temps seule à l’intérieur du cube, elle a su exploiter intelligemment ces moments” et servir les deux thèmes centraux du film : la solitude et la renaissance d’un individu face à l’adversité. Pour interpréter ce personnage à la dérive, “Sandra est allée puiser dans les recoins les plus sombres de son être”. Si bien que “Gravity” peut se regarder comme une spectaculaire aventure dans l’espace ou comme une exploration intime des grands thèmes de la vie."
+                            },
+                            "format": "markdown",
+                            "text": "À la question : “De quoi êtes vous le plus fier dans ‘Gravity’ ?”, le réalisateur répond invariablement : “De la performance de Sandra Bullock.” “Presque tout le temps seule à l’intérieur du cube, elle a su exploiter intelligemment ces moments” et servir les deux thèmes centraux du film : la solitude et la renaissance d’un individu face à l’adversité. Pour interpréter ce personnage à la dérive, “Sandra est allée puiser dans les recoins les plus sombres de son être”. Si bien que “Gravity” peut se regarder comme une spectaculaire aventure dans l’espace ou comme une exploration intime des grands thèmes de la vie."
+                        },
+                        "position": 7
+                    },
+                    {
+                        "id": 30549,
+                        "created_at": "2015-01-29T16:53:15+0100",
+                        "updated_at": "2015-01-29T16:53:15+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.image",
+                        "settings": {
+                            "media": {
+                                "provider_metadata": {
+                                    "id": 13969810,
+                                    "name": "169-TRAITEMENT-1-GRAVITY-3.jpg",
+                                    "created_at": "2014-11-04T18:27:05+0100",
+                                    "updated_at": "2014-11-04T18:27:05+0100",
+                                    "uri": "autoid:/AUTOID/AUTWIDE/c670/385",
+                                    "mime_type": "image/jpeg",
+                                    "format": "AUTWIDE",
+                                    "type": "1",
+                                    "description": "",
+                                    "width": 1257,
+                                    "height": 708
+                                },
+                                "name": "169-TRAITEMENT-1-GRAVITY-3.jpg",
+                                "enabled": false,
+                                "provider_name": "sonata.media.provider.bddpe",
+                                "provider_status": 1,
+                                "provider_reference": "13969810",
+                                "width": 1257,
+                                "height": 708,
+                                "author_name": "bsaunier",
+                                "context": "article",
+                                "updated_at": "2014-11-04T18:27:05+0100",
+                                "created_at": "2014-11-04T18:27:05+0100",
+                                "content_type": "image/jpeg",
+                                "size": 261985,
+                                "id": 79
+                            }
+                        },
+                        "position": 8
+                    }
+                ],
+                "categories": [],
+                "tags": [],
+                "images": [
+                    {
+                        "id": 14458155,
+                        "name": "73-BO-GRAVITY.jpg",
+                        "created_at": "2014-11-18T18:25:24+0100",
+                        "updated_at": "2014-11-18T18:25:24+0100",
+                        "uri": "autoid:/AUTOID/AUTRAW/dcbc/969",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTRAW",
+                        "type": "1",
+                        "description": "",
+                        "width": 2760,
+                        "height": 1182
+                    },
+                    {
+                        "id": 14458157,
+                        "name": "LEADER-169-BO-GRAVITY.jpg",
+                        "created_at": "2014-11-18T18:25:54+0100",
+                        "updated_at": "2014-11-18T18:25:54+0100",
+                        "uri": "autoid:/AUTOID/AUTWIDE/dcd3/971",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTWIDE",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 356
+                    },
+                    {
+                        "id": 14458161,
+                        "name": "NORMAL-169-BO-GRAVITY.jpg",
+                        "created_at": "2014-11-18T18:26:54+0100",
+                        "updated_at": "2014-11-18T18:26:54+0100",
+                        "uri": "autoid:/AUTOID/AUTWIDE/dcd5/973",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTWIDE",
+                        "type": "1",
+                        "description": "",
+                        "width": 310,
+                        "height": 172
+                    },
+                    {
+                        "id": 14458163,
+                        "name": "LEADER-43-BO-GRAVITY.jpg",
+                        "created_at": "2014-11-18T18:27:27+0100",
+                        "updated_at": "2014-11-18T18:27:27+0100",
+                        "uri": "autoid:/AUTOID/AUTTV/dcd7/975",
+                        "mime_type": "image/jpeg",
+                        "format": "AUTTV",
+                        "type": "1",
+                        "description": "",
+                        "width": 640,
+                        "height": 480
+                    }
+                ],
+                "programs": [
+                    {
+                        "id": 4180476,
+                        "title": "Gravity",
+                        "subtype": "Film Science-fiction",
+                        "nationality": "Grande-Bretagne - Etats-Unis",
+                        "year": 2013,
+                        "length": 90,
+                        "abstract": "Le docteur Ryan Stone, brillante experte en ingénierie médicale, est novice en matière d'expédition spatiale. Lors de son premier voyage, elle accompagne l'astronaute chevronné Matt Kowalsky. Mais alors qu'ils effectuent une banale sortie dans l'espace, des débris en orbite s'abattent sur leur navette. Ils se retrouvent seuls dans l'espace, à 600 kilomètres de la Terre. Alors que leurs chances de survie sont minimes, ils doivent faire preuve de beaucoup de sang-froid et d'entraide pour tenter de rejoindre le sol. Perdus dans cet univers infini, ils essaient de gérer des réserves d'oxygène qui diminuent peu à peu. Bientôt, une seconde vague de débris met leur vie en danger...",
+                        "created_at": "2015-02-17T11:03:05+0100",
+                        "updated_at": "2015-01-14T20:39:19+0100"
+                    }
+                ]
+            }
+
+### Retrieve an Article [GET]
+
++ Response 200
+
+    [Article][]
+
++ Response 404
+
+    + Body
+
+            {
+                "code": 404,
+                "message": "Article (1) not found"
+            }
+
+### Update an Article [PUT]
+
++ Request (application/json)
+
+            {
+                "publication_starts_at": "2014-04-14T02:15:15+02:00",
+                "publication_ends_at": "2014-05-30T02:15:15+02:00",
+                "status": 3,
+                "type": "edito",
+                "title": "AfterSchok, sacré meilleur film de l'univers",
+                "internal_title": "AfterSchok, sacré meilleur film de l'univers",
+                "subtitle": "AfterSchok, sacré meilleur film de l'univers",
+                "abstract": "Zombies reversus ab inferno, nam malum cerebro. De carne animata corpora quaeritis. Summus sit​​, morbo vel maleficia? De Apocalypsi undead dictum mauris. Hi mortuis soulless creaturas, imo monstra adventus vultus comedat cerebella viventium. Qui offenderit rapto, terribilem incessu. The voodoo sacerdos suscitat mortuos comedere carnem. Search for solum oculi eorum defunctis cerebro. Nescio an Undead zombies. Sicut malus movie horror.",
+                "video_id": 150,
+            }
+
++ Response 200
+
+    [Article][]
+
++ Response 404
+
+    + Body
+
+            {
+                "code": 404,
+                "message": "Article with id `1` could not be found"
+            }
+
+## Article List of Versions [/dataapi/articles/{id}/versions]
+
+List of all version of an article 
+
++ Parameters
+
+    + id (int) ... article ID
+
++ Model  (application/json)
+
+    + Body
+    
+            {
+                "page": 1,
+                "max_per_page": 2,
+                "last_page": false,
+                "results": [
+                    {
+                        "id": 47,
+                        "version": 1,
+                        "current": false,
+                        "created_at": "2014-11-04T15:52:25+0100",
+                        "updated_at": "2014-11-04T15:52:25+0100",
+                        "publication_starts_at": "2014-11-16T15:51:00+0100",
+                        "publication_ends_at": "2014-11-29T15:52:00+0100",
+                        "status": 0,
+                        "type": 0,
+                        "title": "LE RETOUR DE L'INSPECTEUR À RIRE",
+                        "internal_title": "LE RETOUR DE L'INSPECTEUR À RIRE",
+                        "subtitle": "",
+                        "overtitle": "BROOKLYN NINE-NINE – SAISON 2",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "Couronnée par deux Golden Globes (meilleure comédie et meilleur acteur pour \r\nAndy Samberg), “Brooklyn Nine-Nine” n'en finit pas de ne pas se prendre au \r\nsérieux dans cette saison où Jake réintègre le commissariat après sa mission \r\nd’infiltration. Rencontre avec le détective Peralta et ses collègues bien allumés…",
+                        "validated_at": "2014-11-04T15:52:25+0100",
+                        "epg_id": 483,
+                        "universe": "mag-canal-sat",
+                        "brand_epg": {
+                            "id": 483,
+                            "name": "CANAL+ SERIES"
+                        },
+                        "fragments": [
+                            {
+                                "id": 1210,
+                                "created_at": "2014-11-04T15:52:25+0100",
+                                "updated_at": "2014-11-04T15:52:25+0100",
+                                "enabled": true,
+                                "type": "canal.fragment.title",
+                                "settings": {
+                                    "text": "PROTÉGER ET FAIRE RIRE"
+                                },
+                            "position": 0
+                            }
+                        ],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 47,
+                        "version": 2,
+                        "current": false,
+                        "created_at": "2014-11-04T16:01:47+0100",
+                        "updated_at": "2014-11-04T16:01:47+0100",
+                        "publication_starts_at": "2014-11-16T15:51:00+0100",
+                        "publication_ends_at": "2014-11-29T15:52:00+0100",
+                        "status": 0,
+                        "type": 0,
+                        "title": "LE RETOUR DE L'INSPECTEUR À RIRE",
+                        "internal_title": "LE RETOUR DE L'INSPECTEUR À RIRE",
+                        "subtitle": "",
+                        "overtitle": "BROOKLYN NINE-NINE – SAISON 2",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "Couronnée par deux Golden Globes (meilleure comédie et meilleur acteur pour \r\nAndy Samberg), “Brooklyn Nine-Nine” n'en finit pas de ne pas se prendre au \r\nsérieux dans cette saison où Jake réintègre le commissariat après sa mission \r\nd’infiltration. Rencontre avec le détective Peralta et ses collègues bien allumés…",
+                        "validated_at": "2014-11-04T15:52:25+0100",
+                        "epg_id": 483,
+                        "universe": "mag-canal-sat",
+                        "brand_epg": {
+                            "id": 483,
+                            "name": "CANAL+ SERIES"
+                        },
+                        "fragments": [
+                            {
+                                "id": 1211,
+                                "created_at": "2014-11-04T16:01:47+0100",
+                                "updated_at": "2014-11-04T16:01:47+0100",
+                                "enabled": true,
+                                "type": "canal.fragment.title",
+                                "settings": {
+                                    "text": "PROTÉGER ET FAIRE RIRE"
+                                },
+                                "position": 0
+                            },
+                            {
+                                "id": 1212,
+                                "created_at": "2014-11-04T16:01:47+0100",
+                                "updated_at": "2014-11-04T16:01:47+0100",
+                                "enabled": true,
+                                "type": "canal.fragment.image",
+                                "settings": {
+                                    "media": {
+                                        "provider_metadata": {
+                                            "id": 13968493,
+                                            "name": "RAW-TRAITEMENT-1-BROOKLIN-NINE-NINE-S1-1.jpg",
+                                            "created_at": "2014-11-04T15:55:22+0100",
+                                            "updated_at": "2014-11-04T15:55:22+0100",
+                                            "uri": "autoid:/AUTOID/AUTRAW/c60f/351",
+                                            "mime_type": "image/png",
+                                            "format": "AUTRAW",
+                                            "type": "1",
+                                            "description": "",
+                                            "width": 452,
+                                            "height": 321
+                                        },
+                                        "name": "RAW-TRAITEMENT-1-BROOKLIN-NINE-NINE-S1-1.jpg",
+                                        "enabled": false,
+                                        "provider_name": "sonata.media.provider.bddpe",
+                                        "provider_status": 1,
+                                        "provider_reference": "13968493",
+                                        "width": 452,
+                                        "height": 321,
+                                        "author_name": "bsaunier",
+                                        "context": "article",
+                                        "updated_at": "2014-11-04T15:55:23+0100",
+                                        "created_at": "2014-11-04T15:55:23+0100",
+                                        "content_type": "image/png",
+                                        "size": 150621,
+                                        "id": 62
+                                    }
+                                },
+                                "position": 1
+                            },
+                            {
+                                "id": 1213,
+                                "created_at": "2014-11-04T16:01:47+0100",
+                                "updated_at": "2014-11-04T16:01:47+0100",
+                                "enabled": true,
+                                "type": "canal.fragment.image",
+                                "settings": {
+                                    "media": {
+                                        "provider_metadata": {
+                                            "id": 13968495,
+                                            "name": "RAW-TRAITEMENT-1-BROOKLIN-NINE-NINE-S1-3.jpg",
+                                            "created_at": "2014-11-04T15:57:25+0100",
+                                            "updated_at": "2014-11-04T15:57:25+0100",
+                                            "uri": "autoid:/AUTOID/AUTRAW/c611/353",
+                                            "mime_type": "image/png",
+                                            "format": "AUTRAW",
+                                            "type": "1",
+                                            "description": "",
+                                            "width": 452,
+                                            "height": 321
+                                        },
+                                        "name": "RAW-TRAITEMENT-1-BROOKLIN-NINE-NINE-S1-3.jpg",
+                                        "enabled": false,
+                                        "provider_name": "sonata.media.provider.bddpe",
+                                        "provider_status": 1,
+                                        "provider_reference": "13968495",
+                                        "width": 452,
+                                        "height": 321,
+                                        "author_name": "bsaunier",
+                                        "context": "article",
+                                        "updated_at": "2014-11-04T15:57:25+0100",
+                                        "created_at": "2014-11-04T15:57:25+0100",
+                                        "content_type": "image/png",
+                                        "size": 139772,
+                                        "id": 63
+                                    }
+                                },
+                                "position": 2
+                            }
+                        ],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    }
+                ]
+            }
+    
+### List of versions [GET]
+
++ Response 200 
+
+        [Article List of Versions][]
+    
+## Article Versions [/dataapi/articles/{id}/versions/{version}]
+
+Return a version of article
+
++ Parameters
+
+    + id (int) ... id of article.
+    + version (int) ... version of article.
+    
++ Model (application/json)
+
+            {
+                "id": 47,
+                "version": 1,
+                "current": false,
+                "created_at": "2014-11-04T15:52:25+0100",
+                "updated_at": "2014-11-04T15:52:25+0100",
+                "publication_starts_at": "2014-11-16T15:51:00+0100",
+                "publication_ends_at": "2014-11-29T15:52:00+0100",
+                "status": 0,
+                "type": 0,
+                "title": "LE RETOUR DE L'INSPECTEUR À RIRE",
+                "internal_title": "LE RETOUR DE L'INSPECTEUR À RIRE",
+                "subtitle": "",
+                "overtitle": "BROOKLYN NINE-NINE – SAISON 2",
+                "section_title": "",
+                "ambiance": "noir",
+                "author": "bsaunier",
+                "abstract": "Couronnée par deux Golden Globes (meilleure comédie et meilleur acteur pour \r\nAndy Samberg), “Brooklyn Nine-Nine” n'en finit pas de ne pas se prendre au \r\nsérieux dans cette saison où Jake réintègre le commissariat après sa mission \r\nd’infiltration. Rencontre avec le détective Peralta et ses collègues bien allumés…",
+                "validated_at": "2014-11-04T15:52:25+0100",
+                "epg_id": 483,
+                "universe": "mag-canal-sat",
+                "brand_epg": {
+                    "id": 483,
+                    "name": "CANAL+ SERIES"
+                },
+                "fragments": [
+                    {
+                        "id": 1210,
+                        "created_at": "2014-11-04T15:52:25+0100",
+                        "updated_at": "2014-11-04T15:52:25+0100",
+                        "enabled": true,
+                        "type": "canal.fragment.title",
+                        "settings": {
+                            "text": "PROTÉGER ET FAIRE RIRE"
+                        },
+                        "position": 0
+                    }
+                ]
+            }
+
+### Get an article version [GET]
+
++ Response 200
+
+        [Article Versions][] 
+
++ Response 404
+
+    + Body 
+            {
+                "code": 404,
+                "message": "Article with id `47` at version `5432` could not be found"
+            }
+
+## List of Articles [/dataapi/articles{?referenceId,status,title,internalTitle,author,updatedAt,universe,page,count,orderBy}]
+
++ Parameters
+    + referenceId (int) ... article ID 
+    + status (int) ... status of article (0 => Draft, 1 => to publish, 2 => published, 3 => archived)
+    + title (string) ... title of article (exact match)
+    + internalTitle (string) ... internal title  (exact match)
+    + author (string) ... author name (exact match)
+    + updatedAt (date) ... update time (exact match !!! is this really what's needed ???)
+    + universe (string) ... universe (exact match)
+    + page (int) ... page number
+    + count (int) ... number of article per page
+    + orderBy (associative array) ... field to order by.
+    
++ Model (application/json)
+
+    + Body
+    
+            {
+                "page": 1,
+                "max_per_page": 10,
+                "last_page": false,
+                "results": [
+                    {
+                        "id": 45,
+                        "version": 45,
+                        "current": true,
+                        "created_at": "2015-02-13T16:48:42+0100",
+                        "updated_at": "2015-02-13T16:48:42+0100",
+                        "publication_starts_at": "2015-02-13T16:30:00+0100",
+                        "publication_ends_at": "2015-02-13T16:50:00+0100",
+                        "status": 2,
+                        "type": 0,
+                        "title": "Le Hobbit à la puissance 2",
+                        "internal_title": "LE HOBBIT : LA DESOLATION DE SMAUG",
+                        "subtitle": "Enfin la rencontre entre Bilbon et le dragon au cœur de la montagne  Solitaire ! Un deuxième volet plus enlevé, plus sombre et encore plus spectaculaire.",
+                        "overtitle": "LE HOBBIT : LA DESOLATION DE SMAUG",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "Pour ce deuxième volet des aventures de Bilbon le Hobbit, plus complexe et encore plus ambitieux, Peter Jackson met les bouchées doubles. Si les ingrédients de l’univers de Tolkien sont toujours les mêmes, les doses, elles, ont changé. Au menu : action, frissons et effets spéciaux en très grand format. Ainsi qu’un dragon d’exception…",
+                        "validated_at": "2014-11-04T11:53:26+0100",
+                        "epg_id": 1,
+                        "universe": "mag-canal",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 46,
+                        "version": 28,
+                        "current": true,
+                        "created_at": "2015-01-12T15:46:34+0100",
+                        "updated_at": "2015-01-12T15:46:34+0100",
+                        "publication_starts_at": "2014-11-05T15:19:00+0100",
+                        "publication_ends_at": "2014-11-16T15:19:00+0100",
+                        "status": 1,
+                        "type": 0,
+                        "title": "Trépanateur fou, ressusciteur, empoisonneur…",
+                        "internal_title": "Trépanateur fou, ressusciteur, empoisonneur…",
+                        "subtitle": "Découvrez la face cachée de la recherche scientifique. De nouvelles histoires  incroyables, dérangeantes et 100 % vraies.",
+                        "overtitle": "Expériences interdites saison 2 - DISCOVERY SCIENCE",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "Dans cette série documentaire inédite (saison 2), John Noble, la star de la série “Fringe”, éclaire les dossiers les plus obscurs qui ont marqué la science. Trente-neuf histoires sidérantes aux frontières du rationnel. Leur point commun ? Elles retracent le destin de savants géniaux, ou presque… Portraits de quatre d’entre eux.",
+                        "validated_at": "2014-11-04T15:20:14+0100",
+                        "epg_id": 390,
+                        "universe": "mag-canal-sat",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 47,
+                        "version": 29,
+                        "current": true,
+                        "created_at": "2014-11-18T12:03:22+0100",
+                        "updated_at": "2014-11-18T12:03:22+0100",
+                        "publication_starts_at": "2014-11-11T15:51:00+0100",
+                        "publication_ends_at": "2014-11-22T15:52:00+0100",
+                        "status": 1,
+                        "type": 0,
+                        "title": "Le retour de l'inspecteur à rire",
+                        "internal_title": "Le retour de l'inspecteur à rire",
+                        "subtitle": "Le super flic Jake Peralta revient au bercail. Visite guidée du 9-9,  un commissariat où l'on finit toujours mort de rire.",
+                        "overtitle": "Brooklyn Nine-Nine – saison 2 / CANAL+SERIES",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "Couronnée par deux Golden Globes (meilleure comédie et meilleur acteur pour Andy Samberg), “Brooklyn Nine-Nine” n'en finit pas de ne pas se prendre au sérieux dans cette saison où Jake réintègre le commissariat après sa mission d’infiltration. Rencontre avec le détective Peralta et ses collègues bien allumés…",
+                        "validated_at": "2014-11-04T15:52:25+0100",
+                        "epg_id": 483,
+                        "universe": "mag-canal",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 48,
+                        "version": 9,
+                        "current": true,
+                        "created_at": "2014-11-12T11:48:48+0100",
+                        "updated_at": "2014-11-12T11:48:48+0100",
+                        "publication_starts_at": "2014-11-28T17:55:00+0100",
+                        "publication_ends_at": "2014-12-07T17:55:00+0100",
+                        "status": 0,
+                        "type": 0,
+                        "title": "Famille décomposée",
+                        "internal_title": "Famille décomposée",
+                        "subtitle": "Faire disparaître un corps ou des preuves ? Ce “nettoyeur” sait faire. Gérer un père toxique qui réapparaît dans sa vie, moins.",
+                        "overtitle": "Ray Donovan - saisons 1&2",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "Plongez dans les bas-fonds d’Hollywood avec les saisons 1 et 2 de cette histoire familiale conflictuelle et sombre. Une série choc encensée par la critique pour son écriture. Et pour ses interprètes : Liev Schreiber et Jon Voight, magnétiques dans ce bras de fer psychologique entre un fils “nettoyeur” taciturne et un père hâbleur pas “clean” du tout.",
+                        "validated_at": "2014-11-04T17:55:53+0100",
+                        "epg_id": 1,
+                        "universe": "mag-canal",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 49,
+                        "version": 20,
+                        "current": true,
+                        "created_at": "2014-12-12T09:27:06+0100",
+                        "updated_at": "2014-12-12T09:27:06+0100",
+                        "publication_starts_at": "2014-11-19T16:03:00+0100",
+                        "publication_ends_at": "2015-01-13T16:03:00+0100",
+                        "status": 1,
+                        "type": 0,
+                        "title": "La vie de Gallienne",
+                        "internal_title": "La vie de Gallienne",
+                        "subtitle": "Délirante, cruelle, prodigieuse… Trois raisons de craquer pour LA comédie de l’année.",
+                        "overtitle": "Les Garçons et Guillaume, à table ! - CANAL+ A LA DEMANDE",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "Meilleur premier film, meilleur film, meilleur montage, meilleure adaptation et… meilleur acteur aux César 2014 ! Guillaume Gallienne a tout raflé, y compris l’adhésion du public : 2,8 millions d’entrées en salles. Jamais psychanalyse n’a été aussi réjouissante. Trois raisons d’y retourner.",
+                        "validated_at": "2014-11-05T16:03:17+0100",
+                        "epg_id": 0,
+                        "universe": "mag-canal",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 50,
+                        "version": 20,
+                        "current": true,
+                        "created_at": "2015-01-29T17:12:25+0100",
+                        "updated_at": "2015-01-29T17:12:25+0100",
+                        "publication_starts_at": "2014-11-28T16:12:00+0100",
+                        "publication_ends_at": "2015-01-16T15:12:00+0100",
+                        "status": 3,
+                        "type": 0,
+                        "title": "Rural suspect",
+                        "internal_title": "MALAVITA",
+                        "subtitle": "Quand une famille de mafieux débarque en Normandie, gare aux étincelles ! Luc Besson embarque son casting de choc dans une comédie noire, truffée de clins d’œil aux films de gangsters.",
+                        "overtitle": "MALAVITA",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "Pour échapper aux hommes de la mafia qu’il a dénoncés, un gangster new-yorkais débarque avec femme et enfants dans un petit village normand. Très vite, les mauvaises habitudes reviennent… Et les ennuis aussi ! Avec un plaisir contagieux, Luc Besson adapte le best-seller de Tonino Benaquista et multiplie les clins d’œil aux classiques du film de gangsters, dont “Les Affranchis” de Martin Scorsese, qui n’est autre que le producteur exécutif du film. Un savoureux choc des cultures, truffé d’humour et d’action et servi par un casting de stars.",
+                        "validated_at": "2014-11-05T16:17:32+0100",
+                        "epg_id": 1,
+                        "universe": "mag-canal",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 51,
+                        "version": 35,
+                        "current": true,
+                        "created_at": "2014-11-24T09:23:40+0100",
+                        "updated_at": "2014-11-24T09:23:40+0100",
+                        "publication_starts_at": "2014-11-20T16:26:00+0100",
+                        "publication_ends_at": "2014-12-20T16:26:00+0100",
+                        "status": 0,
+                        "type": 0,
+                        "title": "Jeux d'actrice",
+                        "internal_title": "Jeux d'actrice",
+                        "subtitle": "Pas de répit pour Jennifer Lawrence qui remet le costume de Katniss Everdeen dans le nouveau volet de “Hunger Games”. Portrait croisé de la comédienne et de son personnage, deux icônes de leurs temps.",
+                        "overtitle": "Hunger Games, l'embrasement - CANAL+ CINEMA",
+                        "section_title": "",
+                        "ambiance": "gris-fonce",
+                        "author": "bsaunier",
+                        "abstract": "Après avoir remporté la 74ème édition des “Hunger Games”, Katniss et Peeta effectuent la grande tournée des vainqueurs. En parcourant les districts toujours sous le joug du Capitole, Katniss sent la révolte gronder. Pour enrayer la rébellion, le président Snow annonce alors le début d'une nouvelle édition des Jeux, dite de l’“Expiation”, qui pourrait changer la face de Panem à jamais… Katniss revient plus déterminée que jamais dans un deuxième volet à l'action intense. Un rôle qui colle merveilleusement à la personnalité de l’actrice.",
+                        "validated_at": "2014-11-05T16:39:38+0100",
+                        "epg_id": 1,
+                        "universe": "mag-canal",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 52,
+                        "version": 5,
+                        "current": true,
+                        "created_at": "2014-11-12T10:54:31+0100",
+                        "updated_at": "2014-11-12T10:54:31+0100",
+                        "publication_starts_at": "2014-11-20T11:46:00+0100",
+                        "publication_ends_at": "2014-12-07T11:46:00+0100",
+                        "status": 0,
+                        "type": 0,
+                        "title": "L'amour en cavale",
+                        "internal_title": "L'amour en cavale",
+                        "subtitle": "Suzanne vit avec sa sœur et son père veuf jusqu’à son coup de foudre pour un voyou. Une chronique familiale sur vingt-cinq ans servie par un casting magistral.",
+                        "overtitle": "Suzanne",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "L'histoire d'une famille qui vole en éclats quand l'héroïne, une fille-mère, s'entiche d'un petit malfrat qui l'entraîne dans sa fuite. Pour cette œuvre forte, Katell Quillévéré a choisi une narration elliptique. Et des comédiens confondants de réalisme : Sara Forestier, Adèle Haenel – César 2014 de la meilleure actrice dans un second rôle – et François Damiens, parfait à contre-emploi.",
+                        "validated_at": "2014-11-06T11:48:44+0100",
+                        "epg_id": 1,
+                        "universe": "mag-canal",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 53,
+                        "version": 41,
+                        "current": true,
+                        "created_at": "2014-12-16T12:01:15+0100",
+                        "updated_at": "2014-12-16T12:01:15+0100",
+                        "publication_starts_at": "2014-11-16T16:33:00+0100",
+                        "publication_ends_at": "2014-12-07T16:33:00+0100",
+                        "status": 0,
+                        "type": 0,
+                        "title": "Que la Force soit avec eux",
+                        "internal_title": "Que la Force soit avec eux",
+                        "subtitle": "La saga “Star Wars” revient ! Découvrez les héros de la nouvelle série d’animation signée Lucasfilm : cinq rebelles unis contre l’Empire.",
+                        "overtitle": "Star Wars Rebels - DISNEY XD",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "Entre les deux trilogies et alors que l’Empire étend son emprise, une poignée de rebelles entre en résistance. Venus d’horizons différents, ils luttent pour le même but : vaincre le côté obscur de la Force. L'occasion pour les plus jeunes de découvrir l'univers de “Star Wars” avant la sortie tant attendue de l’épisode 7, fin 2015. Rencontre avec une nouvelle génération de combattants.",
+                        "validated_at": "2014-11-06T16:58:27+0100",
+                        "epg_id": 68,
+                        "universe": "mag-canal-sat",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    },
+                    {
+                        "id": 54,
+                        "version": 24,
+                        "current": true,
+                        "created_at": "2014-12-16T14:57:06+0100",
+                        "updated_at": "2014-12-16T14:57:06+0100",
+                        "publication_starts_at": "2014-11-28T17:58:00+0100",
+                        "publication_ends_at": "2015-01-23T11:58:00+0100",
+                        "status": 2,
+                        "type": 0,
+                        "title": "Klapisch-Duris : une histoire qui dure !",
+                        "internal_title": "Klapisch-Duris : une histoire qui dure !",
+                        "subtitle": "Désormais père, Xavier part à New York retrouver ses enfants. Après “L’Auberge espagnole” et “Les Poupées russes”, Klapisch et Duris à nouveau réunis.",
+                        "overtitle": "CASSE-TETE CHINOIS",
+                        "section_title": "",
+                        "ambiance": "noir",
+                        "author": "bsaunier",
+                        "abstract": "En signant “Casse-tête chinois”, Cédric Klapisch clôt la trilogie entamée avec “L’Auberge espagnole” et poursuivie avec “Les Poupées russes”. Depuis vingt ans et leur première collaboration sur “Le Péril jeune”, le réalisateur et Romain Duris, son acteur fétiche, cultivent une amitié professionnelle et fusionnelle. Pourquoi une telle longévité ?",
+                        "validated_at": "2014-11-06T17:59:00+0100",
+                        "epg_id": 1,
+                        "universe": "mag-canal",
+                        "fragments": [],
+                        "categories": [],
+                        "tags": [],
+                        "images": [],
+                        "programs": []
+                    }
+                ]
+            }
+
+### List Articles [GET]
+
++ Response 200
+    
+    [List of Articles][]
+
+### Create an Article [POST]
+
++ Request (application/json)
+
+            {
+                "publication_starts_at": "2014-04-14T02:15:15+02:00",
+                "publication_ends_at": "2014-05-30T02:15:15+02:00",
+                "status": 3,
+                "type": "edito",
+                "title": "AfterSchok, sacré meilleur film du monde",
+                "internal_title": "AfterSchok, sacré meilleur film du monde",
+                "subtitle": "AfterSchok, sacré meilleur film du monde",
+                "abstract": "Zombies reversus ab inferno, nam malum cerebro. De carne animata corpora quaeritis. Summus sit​​, morbo vel maleficia? De Apocalypsi undead dictum mauris. Hi mortuis soulless creaturas, imo monstra adventus vultus comedat cerebella viventium. Qui offenderit rapto, terribilem incessu. The voodoo sacerdos suscitat mortuos comedere carnem. Search for solum oculi eorum defunctis cerebro. Nescio an Undead zombies. Sicut malus movie horror.",
+            }
+
++ Response 201 (application/json)
+
+## List of Channels [/dataapi/brandepgs{?id,name,page,count,orderBy}]
+
++ Parameters
+
+    + id (int) ... epgid of channel.
+    + name (string) ... channel name.
+    + page (int) ... page number.
+    + count (int) ... number of element per page.
+    + orderBy (int) ... fields to order by.
+
++ Model (application/json)
+
+            {
+                "page": 1,
+                "max_per_page": 10,
+                "last_page": false,
+                "results": [
+                    {
+                        "id": 29208,
+                        "name": "BAYERISCHES FS"
+                    },
+                    {
+                        "id": 8559,
+                        "name": "BBC ARABIC"
+                    },
+                    {
+                        "id": 130,
+                        "name": "BBC PRIME"
+                    },
+                    {
+                        "id": 99,
+                        "name": "BBC WORLD"
+                    },
+                    {
+                        "id": 8565,
+                        "name": "BBCW 4"
+                    },
+                    {
+                        "id": 419,
+                        "name": "BE IN MAX 10"
+                    },
+                    {
+                        "id": 412,
+                        "name": "BE IN MAX 3"
+                    },
+                    {
+                        "id": 413,
+                        "name": "BE IN MAX 4"
+                    },
+                    {
+                        "id": 414,
+                        "name": "BE IN MAX 5"
+                    },
+                    {
+                        "id": 415,
+                        "name": "BE IN MAX 6"
+                    }
+                ]
+            }
+
+### List Channels[GET]
+
++ Response 200
+
+    [List of Channels][]
+
+## Channel [/dataapi/brandepgs/{epgid}]
+
++ Parameters
+
+    + epgid (number, required, `1`) ... `epgid` of the channel
+
++ Model (application/json)
+
+    + Body
+        
+            {
+                "id": 1,
+                "name": "CANAL+"
+            }
+
+### Channel Detail [GET]
+
++ Response 200
+
+    [Channel][]
+
+## Weighted Lists [/dataapi/weightedlists{?date,universe,page,count,orderBy}]
+
++ Parameters
+    
+    + date (date) ... date for the list. (exact match date)
+    + universe (string) ... universe of list
+    + page (int) ... page number
+    + count (int) ... element per page
+    + orderBy (associative array) ... order by fields
+
++ Model (application/json)
+
+    + Body
+    
+            {
+                "page": 1,
+                "max_per_page": 10,
+                "last_page": false,
+                "results": [
+                    {
+                        "id": 1,
+                        "universe": "mag-canal",
+                        "date": "2014-10-13T16:34:00+0200",
+                        "created_at": "2014-10-14T16:34:41+0200",
+                        "updated_at": "2014-10-15T14:57:56+0200",
+                        "weighted_list_articles": [
+                            {
+                            "weight": 2,
+                            "article_id": 4
+                            },
+                            {
+                                "weight": 1,
+                                "article_id": 3
+                            },
+                            {
+                                "weight": 0,
+                                "article_id": 2
+                            }
+                        ]
+                    },
+                    {
+                        "id": 2,
+                        "universe": "mag-canal-sat",
+                        "date": "2014-10-13T18:12:00+0200",
+                        "created_at": "2014-10-14T18:12:54+0200",
+                        "updated_at": "2014-10-14T18:12:54+0200",
+                        "weighted_list_articles": [
+                            {
+                                "weight": 1,
+                                "article_id": 8
+                            },
+                            {
+                                "weight": 0,
+                                "article_id": 7
+                            }
+                        ]
+                    },
+                    {
+                        "id": 3,
+                        "universe": "mag-canal",
+                        "date": "2014-10-14T14:57:00+0200",
+                        "created_at": "2014-10-15T14:58:57+0200",
+                        "updated_at": "2014-10-17T11:52:42+0200",
+                        "weighted_list_articles": [
+                            {
+                                "weight": 0,
+                                "article_id": 4
+                            },
+                            {
+                                "weight": 4,
+                                "article_id": 3
+                            },
+                            {
+                                "weight": 3,
+                                "article_id": 9
+                            },
+                            {
+                                "weight": 5,
+                                "article_id": 6
+                            },
+                            {
+                                "weight": 1,
+                                "article_id": 10
+                            },
+                            {
+                                "weight": 2,
+                                "article_id": 2
+                            }
+                        ]
+                    },
+                    {
+                        "id": 4,
+                        "universe": "mag-canal",
+                        "date": "2014-10-18T20:06:00+0200",
+                        "created_at": "2014-10-15T15:06:56+0200",
+                        "updated_at": "2014-10-21T09:13:51+0200",
+                        "weighted_list_articles": [
+                            {
+                                "weight": 1,
+                                "article_id": 2
+                            },
+                            {
+                                "weight": 0,
+                                "article_id": 4
+                            },
+                            {
+                                "weight": 3,
+                                "article_id": 5
+                            },
+                            {
+                                "weight": 2,
+                                "article_id": 3
+                            }
+                        ]
+                    },
+                    {
+                        "id": 5,
+                        "universe": "mag-canal",
+                        "date": "2014-10-17T11:00:00+0200",
+                        "created_at": "2014-10-17T11:25:42+0200",
+                        "updated_at": "2014-10-17T13:54:04+0200",
+                        "weighted_list_articles": [
+                            {
+                                "weight": 0,
+                                "article_id": 2
+                            },
+                            {
+                                "weight": 2,
+                                "article_id": 3
+                            },
+                            {
+                                "weight": 3,
+                                "article_id": 6
+                            },
+                            {
+                                "weight": 1,
+                                "article_id": 4
+                            }
+                        ]
+                    },
+                    {
+                        "id": 6,
+                        "universe": "mag-canal",
+                        "date": "2014-10-17T13:00:00+0200",
+                        "created_at": "2014-10-17T13:51:30+0200",
+                        "updated_at": "2014-10-17T13:51:34+0200",
+                        "weighted_list_articles": [
+                            {
+                                "weight": 0,
+                                "article_id": 4
+                            },
+                            {
+                                "weight": 2,
+                                "article_id": 3
+                            },
+                            {
+                                "weight": 3,
+                                "article_id": 6
+                            },
+                            {
+                                "weight": 1,
+                                "article_id": 2
+                            }
+                        ]
+                    },
+                    {
+                        "id": 7,
+                        "universe": "mag-canal",
+                        "date": "2014-10-17T15:17:00+0200",
+                        "created_at": "2014-10-17T15:19:59+0200",
+                        "updated_at": "2014-10-17T15:19:59+0200",
+                        "weighted_list_articles": [
+                            {
+                                "weight": 1,
+                                "article_id": 3
+                            },
+                            {
+                                "weight": 0,
+                                "article_id": 2
+                            }
+                        ]
+                    },
+                    {
+                        "id": 8,
+                        "universe": "mag-canal",
+                        "date": "2014-10-30T05:25:00+0100",
+                        "created_at": "2014-10-17T15:26:40+0200",
+                        "updated_at": "2014-10-17T15:26:40+0200",
+                        "weighted_list_articles": [
+                            {
+                                "weight": 2,
+                                "article_id": 6
+                            },
+                            {
+                                "weight": 3,
+                                "article_id": 5
+                            },
+                            {
+                                "weight": 0,
+                                "article_id": 4
+                            },
+                            {
+                                "weight": 1,
+                                "article_id": 9
+                            }
+                        ]
+                    },
+                    {
+                        "id": 9,
+                        "universe": "mag-canal",
+                        "date": "2014-10-17T16:28:00+0200",
+                        "created_at": "2014-10-17T16:31:15+0200",
+                        "updated_at": "2014-10-17T16:31:15+0200",
+                        "weighted_list_articles": [
+                            {
+                                "weight": 1,
+                                "article_id": 9
+                            },
+                            {
+                                "weight": 0,
+                                "article_id": 3
+                            }
+                        ]
+                    },
+                    {
+                        "id": 10,
+                        "universe": "mag-canal",
+                        "date": "2014-10-15T16:27:00+0200",
+                        "created_at": "2014-10-17T16:31:25+0200",
+                        "updated_at": "2014-10-17T16:31:25+0200",
+                        "weighted_list_articles": [
+                            {
+                                "weight": 4,
+                                "article_id": 15
+                            },
+                            {
+                                "weight": 2,
+                                "article_id": 18
+                            },
+                            {
+                                "weight": 1,
+                                "article_id": 3
+                            },
+                            {
+                                "weight": 0,
+                                "article_id": 2
+                            },
+                            {
+                                "weight": 3,
+                                "article_id": 14
+                            }
+                        ]
+                    }
+                ]
+            }
+
+
+### List of weighted list [GET]
+
++ Response 200
+    
+    [Weighted Lists][]
+
+### Create a weighted list [POST]
+
+Doesn't seems like to be any checks on weight being unique.
+"date" and "universe" are unique.
+An error is thrown if client tries to create a list with the same keys.
+
++ Request (application/json)
+
+            {
+                "universe":"mag-canal",
+                "date":"2015-01-05",
+                "weighted_list_articles":[
+                    {
+                        "article_id":62,
+                        "weight":1
+                    },
+                    {
+                        "article_id":47,
+                        "weight":1
+                    }
+                ]
+            }
+
++ Response 201 (application/json)
+
++ Response 400 (application/json)
+
+            {
+                "code": 400,
+                "message": "Validation Failed",
+                "errors": {
+                    "errors": [
+                        "Weighted list for universe \"mag-canal\" at date \"2015-01-04T23:00:00Z\" already exists."
+                    ],
+                    "children": {
+                        "universe": [],
+                        "date": [],
+                        "id": [],
+                        "created_at": [],
+                        "updated_at": [],
+                        "weighted_list_articles": {
+                            "children": [
+                                [],
+                                []
+                            ]
+                        }
+                    }
+                }
+            }
+
+## Weighted List [/dataapi/weightedlists/${id}]
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "id": 1,
+                "universe": "mag-canal",
+                "date": "2014-10-13T16:34:00+0200",
+                "created_at": "2014-10-14T16:34:41+0200",
+                "updated_at": "2014-10-15T14:57:56+0200",
+                "weighted_list_articles": [
+                    {
+                        "weight": 2,
+                        "article_id": 4
+                    },
+                    {
+                        "weight": 1,
+                        "article_id": 3
+                    },
+                    {
+                        "weight": 0,
+                        "article_id": 2
+                    }
+                ]
+            }
+
+### Get One Weighted List [GET]
+
++ Response 200
+
+    [Weighted List][]
+
++ Response 404
+
+            {
+                "code": 404,
+                "message": "WeightedList with id `543252` could not be found"
+            }
+            
+### Update Weighted List [PUT]
+
++ Request (application/json)
+
+            {
+                "universe":"mag-canal",
+                "date":"2015-01-05",
+                "weighted_list_articles":[
+                    {
+                        "article_id":62,
+                        "weight":1
+                    },
+                    {
+                        "article_id":47,
+                        "weight":1
+                    }
+                ]
+            }
+
++ Response 201
+
++ Response 400
+
+            {
+                "code": 400,
+                "message": "Validation Failed",
+                "errors": {
+                    "errors": [
+                        "Weighted list for universe \"mag-canal\" at date \"2015-01-04T23:00:00Z\" already exists."
+                    ],
+                    "children": {
+                        "universe": [],
+                        "date": [],
+                        "id": [],
+                        "created_at": [],
+                        "updated_at": [],
+                        "weighted_list_articles": {
+                            "children": [
+                                [],
+                                []
+                            ]
+                        }
+                    }
+                }
+            }
