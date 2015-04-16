@@ -5,15 +5,8 @@ Provides the editorial data
 
 - TODO : provide search and filtering and pagination in lists
 - TODO : REST filtering
-- TODO : bad request in case of invalid input
-- TODO : /contents/id PUT : creation de contenu
-- TODO : /contents/id/?full=true . Kill summary
 - TODO : url path media : remove and add url instead
-- TODO : sub genre a ajouter dans le genre avec un attribut
-- TODO : add jobs in member list
 - TODO : members changer order en rank
-- TODO : Festival mettre le code ISO
-- TODO : media type 
 
 ## Security
 Access is controlled using a security token. The token can be passed using `Session-Token` HTTP Header.
@@ -2422,7 +2415,7 @@ Return the list of the "See Also" programs attached to the given id
             "message":"No such resource."
         }
 
-## Retrieve sub object list [/api/contents/{id}/subobjects]
+## Sub object list [/api/contents/{id}/subobjects]
 Return the list of linked sub objects
 
 + Parameters
@@ -2857,10 +2850,10 @@ Search for lists
         }
 
 # Group Bulk
-In order to perform the same operation on multiple object we provide a Bulk API with these operation :
+In order to perform the same operation on multiple object we provide a Bulk API with these operations :
 
 - See also
-    - Overload
+- Overload
 
 ## See also [/api/bulk/seealso]
 Return the seealso information for the given list of content id
@@ -3081,7 +3074,7 @@ Update or create a channel object.
           "message": "Reason"
         }
 
-## Media [/api/channels/{id}/media]
+## Media list [/api/channels/{id}/media]
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the channel.
@@ -3211,27 +3204,6 @@ Update or create a channel object.
           "errorCode": "404",
           "message": "Reason"
         }
-
-### Update a Channel [PUT]
-
-Update or create a channel media object.
-
-+ Request (application/json)
-
-            {
-              "type": "IMAGE",
-              "height": 272,
-              "width": 352,
-              "format": "image/jpeg",
-              "name": "STD_298296.jpg",
-              "imgType": "STD",
-              "rank": 1,
-              "id": 191281,
-              "updateDate": "2012-09-10T21:44:25.000+0000",
-              "url" : "http://127.0.0.1/images/40420/2013-12-26T08:05:32Z.jpg"
-            }
-            
-+ Response 200 (application/json)            
 
 ### Remove a media from the channel [DELETE]
 
@@ -3473,13 +3445,13 @@ Return the sub tags
           "message": "Reason"
         }
 
-# Group Person
+# Group People
 
 Every human being in the world can be found using this API. Yes you too !
 
 ## List [/api/people]
 
-Return the list of persons.
+Return the list of people.
 
 ### Retrieve events [GET]
 + Response 200 (application/json)
@@ -3495,12 +3467,12 @@ Return the list of persons.
           }
         }
 
-## Person [/api/people/{id}]
+## People [/api/people/{id}]
 
-Return the specified person detail
+Return the specified people detail
 
 + Parameters
-    + id (required, number, `1`) ... Numeric `id` of the person.
+    + id (required, number, `1`) ... Numeric `id` of the people.
 
 
 ### Retrieve events [GET]
@@ -3521,7 +3493,7 @@ Return the specified person detail
 
 # Group Media
 
-A media is a image or a video that can be linked with person, content, channels... A media can exist without the need to be linked to a person or a content...
+A media is a image or a video that can be linked with people, content, channels... A media can exist without the need to be linked to a people or a content...
 Each object that accept media provide a `/media/{mediaId}` method used to link or unlink the object and a media
 
 ## Media [/api/media]
@@ -3729,7 +3701,7 @@ Return the list of event occurence date.
     + eventId (required, number, `1`) ... Numeric `id` of the event.
 
 
-### Retrieve events [GET]
+### Retrieve happening date [GET]
 + Response 200 (application/json)
 
         {
@@ -3756,7 +3728,7 @@ Return the list of event occurence date.
         
 ## Events rewards [/api/events/{eventId}/{year}/rewards]
 
-Return the list of events. An event could be a music festival, academy awards, ...
+Return the list of rewards delivered. An event could be a music festival, academy awards, ...
 
 + Parameters
     + eventId (required, number, `1`) ... Numeric `id` of the event.
@@ -3802,10 +3774,66 @@ Return the list of events. An event could be a music festival, academy awards, .
 ### Retrieve events [GET]
 + Response 200 (application/json)
 
-        {
-          "id": 3,
-          "name": "César du meilleur film",
-        }
+        [
+          {
+            "objectType": "UNIT",
+            "contentType": "SHOW",
+            "itemType": "movie",
+            "titles": {
+              "originalTitle": "The Artist",
+              "epgTitle": "The Artist",
+              "titleDivisible": "The Artist",
+              "subTitleDivisible": "Film Comédie dramatique"
+            },
+            "synopsis": {
+              "small": "En 1927, un acteur, vedette du cinéma muet, sombre dans l'oubli avec l'arrivée du parlant et assiste à l'ascension irrésistible d'une ancienne figurante.",
+              "medium": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma muet, mais l'irruption du parlant va mettre un terme brutal à sa carrière. L'acteur ne tourne plus et sombre dans l'oubli. A l'inverse, Peppy Miller, une jeune figurante, devient la nouvelle étoile de Hollywood...",
+              "large": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma, et sa célébrité n'a d'égal que son orgueil. Son producteur, Al Zimmer, l'invite à la projection de son dernier film, à la sortie duquel il croise Peppy Miller, une comédienne débutante. La jeune femme devient figurante dans un long métrage en tournage aux côtés de George. Les deux acteurs se plaisent aussitôt, mais George refuse de s'engager. C'est alors que le parlant fait son apparition. George, persuadé que cette technologie est sans avenir, va jusqu'à se séparer d'Al pour produire un film muet. Parallèlement, Peppy devient la nouvelle égérie du studio..."
+            },
+            "color": "0",
+            "productionNationality": "France - Belgique",
+            "productionYear": "2011",
+            "updateDate": "2014-12-08T20:12:08.000+0000",
+            "id": 585877,
+            "num": 1,
+            "lang": "fr",
+            "version": "20141208201208",
+            "ratingCSA": 1,
+            "ageRange": 2,
+            "duration": "100",
+            "boost": 32715,
+            "diffusionDate": "2012-10-05T18:55:00.000+0000"
+          },
+          {
+            "objectType": "UNIT",
+            "contentType": "SHOW",
+            "itemType": "movie",
+            "titles": {
+              "originalTitle": "The Artist",
+              "epgTitle": "The Artist",
+              "titleDivisible": "The Artist",
+              "subTitleDivisible": "Film Comédie dramatique"
+            },
+            "synopsis": {
+              "small": "En 1927, un acteur, vedette du cinéma muet, sombre dans l'oubli avec l'arrivée du parlant et assiste à l'ascension irrésistible d'une ancienne figurante.",
+              "medium": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma muet, mais l'irruption du parlant va mettre un terme brutal à sa carrière. L'acteur ne tourne plus et sombre dans l'oubli. A l'inverse, Peppy Miller, une jeune figurante, devient la nouvelle étoile de Hollywood...",
+              "large": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma, et sa célébrité n'a d'égal que son orgueil. Son producteur, Al Zimmer, l'invite à la projection de son dernier film, à la sortie duquel il croise Peppy Miller, une comédienne débutante. La jeune femme devient figurante dans un long métrage en tournage aux côtés de George. Les deux acteurs se plaisent aussitôt, mais George refuse de s'engager. C'est alors que le parlant fait son apparition. George, persuadé que cette technologie est sans avenir, va jusqu'à se séparer d'Al pour produire un film muet. Parallèlement, Peppy devient la nouvelle égérie du studio..."
+            },
+            "color": "0",
+            "productionNationality": "France - Belgique",
+            "productionYear": "2011",
+            "updateDate": "2014-12-08T20:12:08.000+0000",
+            "id": 585878,
+            "num": 1,
+            "lang": "fr",
+            "version": "20141208201208",
+            "ratingCSA": 1,
+            "ageRange": 2,
+            "duration": "100",
+            "boost": 32715,
+            "diffusionDate": "2012-10-05T18:55:00.000+0000"
+          }
+        ]
         
 
 + response 404 (application/json)
@@ -3823,7 +3851,7 @@ This API provides basic monitoring status
 
 Basic health check
 
-### Retrieve events [GET]
+### Retrieve status [GET]
 + Response 200 (application/json)
 
         {
