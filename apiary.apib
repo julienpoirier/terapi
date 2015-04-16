@@ -3079,7 +3079,7 @@ Update or create a channel object.
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the channel.
 
-### Retrieve channel media [GET]
+### Retrieve media list for a channel [GET]
 + Response 200 (application/json)
 
         {
@@ -3213,7 +3213,7 @@ Update or create a channel object.
           "message": "Reason"
         }
         
-### Create/update a channel media link [PUT]
+### Attach a media to a channel / Update it if existing [PUT]
 
 + Request (application/json)
         
@@ -3239,8 +3239,6 @@ Update or create a channel object.
         }        
 
 ### Remove a media from the channel [DELETE]
-
-Remove a media object from a channel.
 
 + Response 200 (application/json)
 
