@@ -13,9 +13,6 @@ Provides the editorial data
 - TODO : add jobs in member list
 - TODO : members changer order en rank
 - TODO : Festival mettre le code ISO
-- TODO : Subchild /api/content/id/subobject
-- TODO : Logo de chaine
-- TODO : remove /api/genres/
 - TODO : media type 
 
 ## Security
@@ -81,6 +78,7 @@ Here are the parameters you'll retrieve in a paginated response:
 | *total*: Total number of elements     | *first*: First page of pager  |                                       |
 |                                       | *last*: Last page             |                                       |
 
+Default values are page = ``, limit = 10`
 
 ## Content structure
 Return the list of content
@@ -1544,6 +1542,13 @@ This method allows users to create content (only itemType:"collection" allowed).
 
             Location: /api/contents/99999999/summary
 
++ response 400 (application/json)
+
+        {
+          "errorCode": "400",
+          "message": "Reason"
+        }
+
 ## Content [/api/contents/{id}?full={full}]
 
 + Parameters
@@ -1942,7 +1947,14 @@ This method allows users to create content (only itemType:"collection" allowed).
            "duration":"100",
            "boost":32715,
            "diffusionDate":"2012-10-05T18:55:00.000+0000"
-        }        
+        }
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 ### Update a content [PUT]
 
@@ -1968,12 +1980,32 @@ Collections rules could be also updated using this method.
 
 + Response 204 (application/json)
 
++ response 400 (application/json)
+
+        {
+          "errorCode": "400",
+          "message": "Reason"
+        }
 
 ### Delete a content [DELETE]
 
 This method allow users to delete a content. Only collection are deletable.
 
 + Response 200 (application/json)
+
++ response 403 (application/json)
+
+        {
+          "errorCode": "403",
+          "message": "Reason"
+        }
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 
 ## Media list [/api/contents/{id}/media]
@@ -2076,7 +2108,14 @@ This method allow users to delete a content. Only collection are deletable.
             "next": "http://127.0.0.1:8080/api/contents/{id}/media?page=2"
           }
         }   
-          
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
+
 ## Media link [/api/contents/{id}/media/{mediaId}]
 
 + Parameters
@@ -2099,8 +2138,13 @@ Attach the given mediaId to the current content
 
 + Response 201 (application/json)
 
-+ Response 400 (application/json)
 
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 ### dettach a media [DELETE]
 
@@ -2108,7 +2152,19 @@ Attach the given mediaId to the current content
 
 + Response 200 (application/json)
 
++ Response 403 (application/json)
+
+        {
+          "errorCode": "403",
+          "message": "Reason"
+        }
+
 + Response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 
 
@@ -2169,6 +2225,25 @@ Attach the given mediaId to the current content
 
 ## Reviews list [/api/contents/{id}/reviews]
 
+Reviews providers are :
+
+| Partner       | Id |
+|---------------|----|
+| Allociné      | 20 |
+| SensCritique  | 44 |
+| Télécâble Sat | 26 |
+| Télérama      | 25 |
+
+Each provider can provide :
+
+| Partner       | Rating type     |
+|---------------|-----------------|
+| Allociné      | NOTE_PRESSE     |
+| Allociné      | NOTE_SPECTATEUR |
+| SensCritique  | NOTE_SENSCRIT   |
+| Télécâble Sat | NOTE_ETOILE     |
+| Télérama      | NOTE_TELERAMA   |
+
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the content.
 
@@ -2208,7 +2283,14 @@ Attach the given mediaId to the current content
             "previous": null,
             "next": "http://127.0.0.1:8080/api/events/1/2012?page=2"
           }
-        }   
+        }
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 ## Tags list [/api/contents/{id}/tags/{tagId}]
 
@@ -2237,7 +2319,14 @@ Attach the given mediaId to the current content
             "previous": null,
             "next": "http://127.0.0.1:8080/api/contents/{id}/tags/{tagId}?page=2"
           }
-        }   
+        }
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
         
 ### Add a new tags link [PUT]
 
@@ -2252,6 +2341,18 @@ Auto defined tags are not deletable. Only user added link could by deleted
 + Response 200 (application/json)
 
 + Response 403 (application/json)
+
+        {
+          "errorCode": "403",
+          "message": "Reason"
+        }
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 ## Awards list [/api/contents/{id}/awards]
 
@@ -2288,7 +2389,14 @@ Auto defined tags are not deletable. Only user added link could by deleted
             "previous": null,
             "next": "http://127.0.0.1:8080/api/contents/{id}/awards?page=2"
           }
-        }   
+        }
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 ## See also list [/api/contents/{id}/seealso]
 Return the list of the "See Also" programs attached to the given id
@@ -2663,7 +2771,6 @@ Add an overload for the content.
 
 + Response 201 (application/json)
 
-+ Response 204 (application/json)
 
 ### Delete an overload [DELETE]
 
@@ -2671,7 +2778,12 @@ Delete an overload for the content.
 
 + Response 200 (application/json)
 
-+ Response 404 (application/json)
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 # Group Search
 
@@ -2933,9 +3045,12 @@ Return a single channel object
             "isMaster": true
         }
 
-+ response 204 (application/json)
-
 + response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 ### Update a Channel [PUT]
 
@@ -2959,6 +3074,12 @@ Update or create a channel object.
 
 + Response 201 (application/json)
 
++ response 400 (application/json)
+
+        {
+          "errorCode": "400",
+          "message": "Reason"
+        }
 
 ## Media [/api/channels/{id}/media]
 
@@ -3084,6 +3205,13 @@ Update or create a channel object.
               "url" : "http://127.0.0.1/images/40420/2013-12-26T08:05:32Z.jpg"
             }
 
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
+
 ### Update a Channel [PUT]
 
 Update or create a channel media object.
@@ -3128,6 +3256,13 @@ Provide partner identity information
           "name" : "CANAL+",
           "enabled" : true,
           "updateDate" : "2015-01-19T20:18:12.000+0100"
+        }
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
         }
 
 # Group Jobs
@@ -3182,6 +3317,13 @@ Return specified job.
             "prefix": "Invités : ",
             "updateDate": "2015-01-19T20:18:12.000+0100"
           }
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 # Group Tags
 
@@ -3249,7 +3391,14 @@ Return the list of tags for the given type.
             "next": "http://127.0.0.1:8080/api/tags/GENRE?page=2"
           }
         }
-        
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
+
 ### Add a tag [POST]
 
 Add a new tag. Only for EDUCATION and MOTCLE.
@@ -3279,16 +3428,14 @@ Manage the specified tag
           "id": 1,
           "label": "Cinéma"
         }
-        
-### Delete a tag [DELETE]
 
-Delete a tag. Deletion are authorized only for EDUCATION and MOTCLE 
++ response 404 (application/json)
 
-+ Response 200 (application/json)
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
-+ Response 403 (application/json)
-
-+ Response 404 (application/json)
 
 ## Sub tags [/api/tags/{type}/{id}/childs]
 
@@ -3319,11 +3466,18 @@ Return the sub tags
             }
         }
 
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
+
 # Group Person
 
 Every human being in the world can be found using this API. Yes you too !
 
-## List [/api/persons]
+## List [/api/people]
 
 Return the list of persons.
 
@@ -3337,11 +3491,11 @@ Return the list of persons.
             "id" : 1
           } ],
           "paging" : {
-            "next" : "http://localhost:9998/persons?page=2"
+            "next" : "http://localhost:9998/people?page=2"
           }
         }
 
-## Person [/api/persons/{id}]
+## Person [/api/people/{id}]
 
 Return the specified person detail
 
@@ -3358,7 +3512,12 @@ Return the specified person detail
             "id" : 1
           }
 
-+ Response 404 (application/json)
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 # Group Media
 
@@ -3368,7 +3527,23 @@ Each object that accept media provide a `/media/{mediaId}` method used to link o
 ## Media [/api/media]
 
 Return the list of media. A media could be an `IMAGE` or a `VIDEO`. 
-The exposed url should be used to retrieve the content and 
+The exposed url should be used to retrieve the content
+
+Provided image type are :
+
+|   imgType    |
+|--------------|
+| CARWEB       |
+| STD          |
+| STD169       |
+| MEASOIR      |
+| MEAVOD       |
+| PIVOT        |
+| BA           |
+| CPLAY        |
+| MEANL        |
+| MEAEUREKA    |
+
 
 ### Retrieve media list [GET]
 + Response 200 (application/json)
@@ -3381,7 +3556,7 @@ The exposed url should be used to retrieve the content and
               "width": 352,
               "format": "image/jpeg",
               "name": "STD_298296.jpg",
-                      "imgType": "STD",
+              "imgType": "STD",
               "rank": 1,
               "id": 191281,
               "updateDate": "2012-09-10T21:44:25.000+0000",
@@ -3453,14 +3628,33 @@ Bring media update capacities
           "updateDate": "2012-09-10T21:44:25.000+0000",
           "url" : "http://127.0.0.1/api/media/191281/file/2013-12-26T08:05:32Z.jpg"
         }
-        
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
+
 ### Delete media [DELETE]
 
 A media can by deleted only if there is no existing link with an object
 
 + Response 200 (application/json)
 
-+ Response 404 (application/json)
++ response 403 (application/json)
+
+        {
+          "errorCode": "403",
+          "message": "Reason"
+        }
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 ## Media file [/api/media/{id}/file]
 
@@ -3482,7 +3676,12 @@ The media file can be retrieved or uploaded using these methods
 
 + Response 200 (application/json)
 
-+ Response 404 (application/json)
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
 
 ### Upload media file [PUT]
 
@@ -3547,7 +3746,13 @@ Return the list of event occurence date.
             "next": "http://127.0.0.1:8080/api/events/{eventId}?page=2"
           }
         }
-        
+
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
         
 ## Events rewards [/api/events/{eventId}/{year}/rewards]
 
@@ -3578,6 +3783,13 @@ Return the list of events. An event could be a music festival, academy awards, .
           }
         }        
 
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
+
 ## Rewarded contents [/api/events/{eventId}/{year}/rewards/{rewardId}]
 
 Return the list of events. An event could be a music festival, academy awards, ...
@@ -3596,3 +3808,29 @@ Return the list of events. An event could be a music festival, academy awards, .
         }
         
 
++ response 404 (application/json)
+
+        {
+          "errorCode": "404",
+          "message": "Reason"
+        }
+
+# Group API Status
+
+This API provides basic monitoring status
+
+## Status [/api/_status]
+
+Basic health check
+
+### Retrieve events [GET]
++ Response 200 (application/json)
+
+        {
+          "version": "1.0.3-SNAPSHOT 2015/04/15 01:34:15 PM,UTC",
+          "dbVersion": "1.16.22",
+          "dbOk": true,
+          "processorsOk": true,
+          "globalStatus": true,
+          "serverName": "frcp03vdv0274"
+        }
