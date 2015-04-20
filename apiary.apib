@@ -2285,11 +2285,10 @@ Each provider can provide :
           "message": "Reason"
         }
 
-## Tags list [/api/contents/{id}/tags/{tagId}]
+## Tags list [/api/contents/{id}/tags]
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the content.
-  + tagId (optional, number, `1`) ... Numeric `id` of the tag.
 
 
 ### Retrieve content tags [GET]
@@ -2320,14 +2319,20 @@ Each provider can provide :
           "errorCode": "404",
           "message": "Reason"
         }
-        
-### Add a new tags link [PUT]
+
+## Tag [/api/contents/{id}/tags/{tagId}]
+
++ Parameters
+  + id (required, number, `1`) ... Numeric `id` of the content.
+  + tagId (optional, number, `1`) ... Numeric `id` of the tag.
+  
+### Add a new content/tag link [PUT]
 
 
 + Response 200 (application/json)
         
 
-### Delete a tags link [DELETE]
+### Delete a content/tag link [DELETE]
 
 Auto defined tags are not deletable. Only user added link could by deleted
 
