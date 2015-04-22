@@ -2170,51 +2170,211 @@ Attach the given mediaId to the current content
 + Response 200 (application/json)
 
         {
-          "data": [
-          {
-            "lastName": "Dujardin",
-            "firstName": "Jean",
+    "data": [
+        {
             "rank": 1,
-            "id": 1477,
             "role": "George Valentin",
+            "people": {
+                "id": 1477,
+                "firstName": "Jean",
+                "lastName": "Dujardin"
+            },
+            "function": {
+                "id": 2,
+                "name": "Acteur",
+                "rank": 12,
+                "prefix": "Avec : "
+            },
             "awards": [
-              {
-                "festivalId": 10,
-                "festivalName": "Oscars",
-                "festivalCountry": "Etats-Unis",
-                "festivalCountryCode" : "US",
-                "year": 2012,
-                "awardId": 11,
-                "awardName": "Oscar du meilleur acteur",
-                "order": 11
-              }
+                {
+                    "festivalId": 10,
+                    "festivalName": "Oscars",
+                    "festivalCountry": "Etats-Unis",
+                    "year": 2012,
+                    "awardId": 11,
+                    "awardName": "Oscar du meilleur acteur",
+                    "order": 11
+                }
             ]
-          },
-          {
-            "lastName": "Bejo",
-            "firstName": "Bérénice",
+        },
+        {
+            "rank": 1,
+            "role": "N/A",
+            "people": {
+                "id": 23711,
+                "firstName": "Michel",
+                "lastName": "Hazanavicius"
+            },
+            "function": {
+                "id": 4,
+                "name": "Réalisateur",
+                "rank": 1,
+                "prefix": "De : "
+            },
+            "awards": [
+                {
+                    "festivalId": 10,
+                    "festivalName": "Oscars",
+                    "festivalCountry": "Etats-Unis",
+                    "year": 2012,
+                    "awardId": 8,
+                    "awardName": "Oscar du meilleur réalisateur",
+                    "order": 8
+                },
+                {
+                    "festivalId": 7,
+                    "festivalName": "César",
+                    "festivalCountry": "France",
+                    "year": 2012,
+                    "awardId": 9,
+                    "awardName": "César du meilleur réalisateur",
+                    "order": 9
+                }
+            ]
+        },
+        {
             "rank": 2,
-            "id": 1622,
             "role": "Peppy Miller",
+            "people": {
+                "id": 1622,
+                "firstName": "Bérénice",
+                "lastName": "Bejo"
+            },
+            "function": {
+                "id": 2,
+                "name": "Acteur",
+                "rank": 12,
+                "prefix": "Avec : "
+            },
             "awards": [
-              {
-                "festivalId": 7,
-                "festivalName": "César",
-                "festivalCountry": "France",
-                "festivalCountryCode" : "FR",
-                "year": 2012,
-                "awardId": 12,
-                "awardName": "César de la meilleur actrice",
-                "order": 12
-              }
+                {
+                    "festivalId": 7,
+                    "festivalName": "César",
+                    "festivalCountry": "France",
+                    "year": 2012,
+                    "awardId": 12,
+                    "awardName": "César de la meilleur actrice",
+                    "order": 12
+                }
             ]
-          }
-        ],
-          "paging": {
-            "previous": null,
-            "next": "http://127.0.0.1:8080/api/contents/{id}/members?page=2"
-          }
-        }   
+        },
+        {
+            "rank": 3,
+            "role": "Al Zimmer",
+            "people": {
+                "id": 1018,
+                "firstName": "John",
+                "lastName": "Goodman"
+            },
+            "function": {
+                "id": 2,
+                "name": "Acteur",
+                "rank": 12,
+                "prefix": "Avec : "
+            },
+            "awards": []
+        },
+        {
+            "rank": 4,
+            "role": "Clifton",
+            "people": {
+                "id": 25450,
+                "firstName": "James",
+                "lastName": "Cromwell"
+            },
+            "function": {
+                "id": 2,
+                "name": "Acteur",
+                "rank": 12,
+                "prefix": "Avec : "
+            },
+            "awards": []
+        },
+        {
+            "rank": 5,
+            "role": "Constance",
+            "people": {
+                "id": 17557,
+                "firstName": "Missy",
+                "lastName": "Pyle"
+            },
+            "function": {
+                "id": 2,
+                "name": "Acteur",
+                "rank": 12,
+                "prefix": "Avec : "
+            },
+            "awards": []
+        },
+        {
+            "rank": 6,
+            "role": "Doris",
+            "people": {
+                "id": 16975,
+                "firstName": "Penelope Ann",
+                "lastName": "Miller"
+            },
+            "function": {
+                "id": 2,
+                "name": "Acteur",
+                "rank": 12,
+                "prefix": "Avec : "
+            },
+            "awards": []
+        },
+        {
+            "rank": 7,
+            "role": "Norma",
+            "people": {
+                "id": 6961,
+                "firstName": "Bitsie",
+                "lastName": "Tulloch"
+            },
+            "function": {
+                "id": 2,
+                "name": "Acteur",
+                "rank": 12,
+                "prefix": "Avec : "
+            },
+            "awards": []
+        },
+        {
+            "rank": 8,
+            "role": "la servante",
+            "people": {
+                "id": 17187,
+                "firstName": "Beth",
+                "lastName": "Grant"
+            },
+            "function": {
+                "id": 2,
+                "name": "Acteur",
+                "rank": 12,
+                "prefix": "Avec : "
+            },
+            "awards": []
+        },
+        {
+            "rank": 9,
+            "role": "Otto",
+            "people": {
+                "id": 6958,
+                "firstName": "Stuart",
+                "lastName": "Pankin"
+            },
+            "function": {
+                "id": 2,
+                "name": "Acteur",
+                "rank": 12,
+                "prefix": "Avec : "
+            },
+            "awards": []
+        }
+    ],
+    "paging": {
+        "next": "http://127.0.0.1:8080/api/contents/585877/members?Access-Token=4ADD57713B2E8C2151C42E3D7D326&page=2"
+    }
+}
 
 ## Reviews list [/api/contents/{id}/reviews]
 
