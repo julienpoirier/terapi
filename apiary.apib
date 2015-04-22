@@ -3,10 +3,10 @@ FORMAT: 1A
 # BDDPe
 Provides the editorial data
 
-- TODO : provide search and filtering and pagination in lists
-- TODO : REST filtering
-- TODO : url path media : remove and add url instead
-- TODO : members changer order en rank
+- TODO: provide search and filtering and pagination in lists
+- TODO: REST filtering
+- TODO: url path media: remove and add url instead
+- TODO: members changer order en rank
 
 ## Security
 Access is controlled using a security token. The token can be passed using `Session-Token` HTTP Header.
@@ -30,20 +30,21 @@ This API is RESTfull and uses the following methods as described:
 | PUT    | To update a resource                  |
 | DELETE | To delete resource                    |
 
-## Description Of Usual Server Responses
+## Description of usual Server Responses
 The common [HTTP Response Status Codes](https://github.com/for-GET/know-your-http-well/blob/master/status-codes.md) are used for API responses.
 
-Successful GET and PUT request will return `200` status code.
+* Successful `GET` and `PUT` request will return `200` status code.
+* Successful `POST` request will return `201` status code, with a header `Location` to the new ressource
+* Successful `DELETE` request will return `204`status code.
 
-Successful POST request will return `201` status code, with a header `Location` to the new ressource
+Error messages will use `4xx` status codes and will provide a description of the error:
 
-Successful DELETE request will return `204`status code.
+* `404`: Missing Page
+* `403`: Forbidden
+* `406`: Miss a required field
+* `400`: Bad Data
 
-Error messages will use `4xx` status codes and will provide a description of the error.
-- 404 : Missing Page
-- 403 : Forbidden
-- 406 : Miss a required field
-- 400 : Bad Data
+For instance:
 
 ```
 HTTP Status Code: 403
@@ -51,14 +52,14 @@ HTTP Status Code: 403
 ```
 
 In which case do we have a 404 or 204
-- 404 are returned when the id is not found for example when calling `/api/contents/2` if no content with the id 2 is found.
-- 204 are returned when the main id is found but there is no data for this action. For example calling `/api/contents/2/media` will return a 204 if no media are linked with the content. In this case the content 2 exists.
+- `404` are returned when the id is not found. For example, when calling `/api/contents/2` if no content with the id 2 is found.
+- `204` are returned when the main id is found but there is no data for this action. For example, calling `/api/contents/2/media` will return a 204 if no media are linked with the content. In this case, the content with ID = 2 exists.
 
 ## Caching
-API is compatible with Entity Tag `ETAG` and the request header `If-Modified-Since`
+API is compatible with Entity Tag `ETAG` and the request header `If-Modified-Since`.
 
 ## Pagination
-All GET requests on collection of objects can use pagination. You can add `page` and `limit` parameters to the query string to retrieve specific content by using the pager. For example:
+All `GET` requests on collection of objects can use `pagination`. You can add `page` and `limit` parameters to the query string to retrieve specific contents by using the pager. For example:
 > ?page=2&limit=10
 
 Here are the parameters you'll retrieve in a paginated response:
@@ -71,33 +72,34 @@ Here are the parameters you'll retrieve in a paginated response:
 | *total*: Total number of elements     | *first*: First page of pager  |                                       |
 |                                       | *last*: Last page             |                                       |
 
-Default values are page = ``, limit = 10`
+For bulk requests, default values are: page = `1`, limit = `300`.
+For all other requests, default values are: page = `1`, limit = `10`.
 
 ## Content structure
-Return the list of content
+Return the list of contents
 
 ### Localisation
 -------------------------------
 
-The API is HTTP Accept-Language header aware. If not given french content will be retuned.
-In case of multiple accepted language the response structure will be adapted.
+The API is HTTP `Accept-Language` header aware. If not given, french content will be returned.
+In case of multiple accepted languages, the response structure will be adapted.
 
 ### CSA Ratings
 -------------------------------
 
-TODO
-Here is the mapping of the CSA code :
+Here is the mapping of the CSA code:
 
-- 1
-- 2
-- 3
-- 4
+* 1 <=> `-10`
+* 2 <=> `-12`
+* 3 <=> `-16`
+* 4 <=> `-18`
 
+Note - [CSA official reference](http://csa.fr/Television/Le-suivi-des-programmes/Jeunesse-et-protection-des-mineurs/La-signaletique-jeunesse)
 
 ### Global structure
 -------------------------------
 
-Here is a mapping between ATG getContent response field, BDDPE XML web services and the current operation mapping.
+Here is a mapping between ATG `getContent` response field, BDDPE XML web services and the current operation mapping.
 In order to minimize the number of field present in response some ATG Field had been replaced like `showTitle` that is now `titles.title`
 
 Type availability | Description
@@ -110,7 +112,7 @@ S                 | show
 F                 | person (figure)
 
 
-Mapping between ATG output and BDDP Xml service :
+Mapping between ATG output and BDDP Xml service:
 
 
 REST Name  | REST Availability  | ATG Name          | ATG availability| Bddpe XML Name
@@ -383,26 +385,28 @@ Return a new session token
 Each content is typed using two fields. The first is `objectType` and should be used to determine what kind of object we're dealing with. Then `contentType` will be used to get an editorial kind of what is in the content.
 
 Each object is typed using `objectType` field. This value should be used to known how to act with the current object :
-- `BRAND` : Represent a brand. No parent is defined.
-- `SEASON` : Represent a season. The `SEASON` parent is a `BRAND`.
-- `UNIT` : Every content that don't have child or parent relation.
-- `LIST` : BDDP Pack and Part. Should be refactored in the future.
+
+- `BRAND`: Represent a brand. No parent is defined.
+- `SEASON`: Represent a season. The `SEASON` parent is a `BRAND`.
+- `UNIT`: Every content that don't have child or parent relation.
+- `LIST`: BDDP Pack and Part. Should be refactored in the future.
 - `PACK `: ATG Imported list.
 
-In addition, is provided the contentn type `contentType`
-- `FILM` : Movie
-- `SERIE` : Brand
-- `DESSINANIME` : Animation
-- `MAGAZINE` : Magazine
-- `CONCERT` : Music
-- `THEATRE` : Theater
-- `SPORT` : Sport
-- `DOCUMENTAIRE` : Documentary
-- `AUTRE` : Other
-- `SHOW` : Show
-- `SEASON` : Season
+In addition, is provided the content type `contentType`:
 
-For a UI purpose a third attribute is exposed `itemType`. In V1 the value is automatically computed based on the `objectType`, the `contentType` and the attached object (parent, child) :
+- `FILM`: Movie
+- `SERIE`: Brand
+- `DESSINANIME`: Animation
+- `MAGAZINE`: Magazine
+- `CONCERT`: Music
+- `THEATRE`: Theater
+- `SPORT`: Sport
+- `DOCUMENTAIRE`: Documentary
+- `AUTRE`: Other
+- `SHOW`: Show
+- `SEASON`: Season
+
+For an UI purpose, a third attribute is exposed `itemType`. In V1 the value is automatically computed based on the `objectType`, the `contentType` and the attached object (parent, child):
 
 - `LIST`
 - `BRAND`
@@ -418,10 +422,9 @@ For a UI purpose a third attribute is exposed `itemType`. In V1 the value is aut
 
 + Parameters
     + version (required, number, `20141123101010`) ... String representing the version that will be used to filter the returned objects.
-    + limit (optional, number, `10`) ... The number of elements retuned limit (max 300)
-    + page (optional, number, `2`) ... The page to be returned
-    + full (optional, boolean, `true`) ... Ask for full objects or not
-
+    + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
+    + full = `false` (optional, boolean, `true`) ... Ask for full objects or not
 
 + Response 200 (application/json)
 
@@ -1535,7 +1538,7 @@ This method allows users to create content (only itemType:"collection" allowed).
 
             Location: /api/contents/99999999/summary
 
-+ response 400 (application/json)
++ Response 400 (application/json)
 
         {
           "errorCode": "400",
@@ -1546,7 +1549,7 @@ This method allows users to create content (only itemType:"collection" allowed).
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the content.
-    + full (optional, boolean, `true`) ... Ask for full object or not
+  + full = `false` (optional, boolean, `true`) ... Ask for full object or not
 
 ### Retrieve a content [GET]
 + Response 200 (application/json)
@@ -1942,7 +1945,7 @@ This method allows users to create content (only itemType:"collection" allowed).
            "diffusionDate":"2012-10-05T18:55:00.000+0000"
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -1973,7 +1976,7 @@ Collections rules could be also updated using this method.
 
 + Response 204 (application/json)
 
-+ response 400 (application/json)
++ Response 400 (application/json)
 
         {
           "errorCode": "400",
@@ -1986,14 +1989,14 @@ This method allow users to delete a content. Only collection are deletable.
 
 + Response 200 (application/json)
 
-+ response 403 (application/json)
++ Response 403 (application/json)
 
         {
           "errorCode": "403",
           "message": "Reason"
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -2001,12 +2004,17 @@ This method allow users to delete a content. Only collection are deletable.
         }
 
 
-## Media list [/api/contents/{id}/media]
+## Media list [/api/contents/{id}/media?page={page}&limit={limit}]
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the content.
+  + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+  + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve content media [GET]
+
+Retrieve all media of a content with a specific `id`.
+
 + Response 200 (application/json)
 
         {
@@ -2102,7 +2110,7 @@ This method allow users to delete a content. Only collection are deletable.
           }
         }   
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -2117,7 +2125,7 @@ This method allow users to delete a content. Only collection are deletable.
 
 ### Attach a media [PUT]
 
-Attach the given mediaId to the current content
+Attach the given `mediaId` to the content with a specific `id`.
 
 + Request (application/json)
 
@@ -2132,16 +2140,16 @@ Attach the given mediaId to the current content
 + Response 201 (application/json)
 
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
           "message": "Reason"
         }
 
-### dettach a media [DELETE]
+### Detach a media [DELETE]
 
-Attach the given mediaId to the current content
+Detach the given `mediaId` to the content with a specific `id`.
 
 + Response 200 (application/json)
 
@@ -2161,12 +2169,17 @@ Attach the given mediaId to the current content
 
 
 
-## Members list [/api/contents/{id}/members]
+## Members list [/api/contents/{id}/members?page={page}&limit={limit}]
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the content.
+  + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+  + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve content members [GET]
+
+Retrieve all `members` of a content with a specific `id`.
+
 + Response 200 (application/json)
 
     {
@@ -2376,18 +2389,18 @@ Attach the given mediaId to the current content
         }
     }
 
-## Reviews list [/api/contents/{id}/reviews]
+## Reviews list [/api/contents/{id}/reviews?page={page}&limit={limit}]
 
-Reviews providers are :
+Reviews providers are:
 
-| Partner       | Id |
-|---------------|----|
-| Allociné      | 20 |
-| SensCritique  | 44 |
-| Télécâble Sat | 26 |
-| Télérama      | 25 |
+| Partner           | Id |
+|--------------------|----|
+| Allociné           | 20 |
+| SensCritique   | 44 |
+| Télécâble Sat  | 26 |
+| Télérama         | 25 |
 
-Each provider can provide :
+Each provider can allow multiple rating type:
 
 | Partner       | Rating type     |
 |---------------|-----------------|
@@ -2399,8 +2412,14 @@ Each provider can provide :
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the content.
+  + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+  + page = `1` (optional, number, `2`) ... The page to be returned
+
 
 ### Retrieve content reviews [GET]
+
+Retrieve all `reviews` of a content with a specific `id`.
+
 + Response 200 (application/json)
 
         {
@@ -2438,20 +2457,24 @@ Each provider can provide :
           }
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
           "message": "Reason"
         }
 
-## Tags list [/api/contents/{id}/tags]
+## Tags list [/api/contents/{id}/tags?page={page}&limit={limit}]
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the content.
-
+  + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+  + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve content tags [GET]
+
+Retrieve all `tags` of a content with a specific `id`.
+
 + Response 200 (application/json)
 
         {
@@ -2473,7 +2496,7 @@ Each provider can provide :
           }
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -2488,13 +2511,15 @@ Each provider can provide :
   
 ### Add a new content/tag link [PUT]
 
+Attach the given `tagId` to the content with a specific `id`.
 
 + Response 200 (application/json)
         
 
 ### Delete a content/tag link [DELETE]
 
-Auto defined tags are not deletable. Only user added link could by deleted
+Detach the given `tagId` to the content with a specific `id`.
+Auto defined tags are not deletable. Only user added link could by deleted.
 
 + Response 200 (application/json)
 
@@ -2505,19 +2530,25 @@ Auto defined tags are not deletable. Only user added link could by deleted
           "message": "Reason"
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
           "message": "Reason"
         }
 
-## Awards list [/api/contents/{id}/awards]
+## Awards list [/api/contents/{id}/awards?page={page}&limit={limit}]
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the content.
+  + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+  + page = `1` (optional, number, `2`) ... The page to be returned
+
 
 ### Retrieve content awards [GET]
+
+Retrieve all `awards` of a content with a specific `id`.
+
 + Response 200 (application/json)
 
         {
@@ -2549,20 +2580,25 @@ Auto defined tags are not deletable. Only user added link could by deleted
           }
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
           "message": "Reason"
         }
 
-## See also list [/api/contents/{id}/seealso]
-Return the list of the "See Also" programs attached to the given id
+## See also list [/api/contents/{id}/seealso?page={page}&limit={limit}]
+Return the list of the "See Also" programs attached to the given id.
 
 + Parameters
     + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+    + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve a content see also [GET]
+
+Retrieve all `seealso` contents of a content with a specific `id`.
+
 + Response 200 (application/json)
 
         [
@@ -2573,20 +2609,25 @@ Return the list of the "See Also" programs attached to the given id
         ]
 
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
             "errorCode":"404",
             "message":"No such resource."
         }
 
-## Sub object list [/api/contents/{id}/subobjects]
+## Sub object list [/api/contents/{id}/subobjects?page={page}&limit={limit}]
 Return the list of linked sub objects
 
 + Parameters
     + id (required, number, `2798845`) ... Numeric `id` of the Content to perform action with.
+    + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve a content see also [GET]
+
+Retrieve all `subobjects` contents of a content with a specific `id`.
+
 + Response 200 (application/json)
 
         [
@@ -2651,7 +2692,7 @@ Return the list of linked sub objects
         ]
 
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
             "errorCode":"404",
@@ -2708,8 +2749,8 @@ Return the list of external id added or modified since the last given version pa
 
 + Parameters
     + version (required, number, `20141123101010`) ... String representing the version that will be used to filter the returned objects.
-    + limit (optional, number, `10`) ... The number of elements retuned limit (max 300)
-    + page (optional, number, `2`) ... The page to be returned
+    + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
 + Response 200 (application/json)
 
@@ -2761,7 +2802,7 @@ Return if found the BDDP Id of the given id for the partner
         }
 
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
             "errorCode":"404",
@@ -2777,8 +2818,8 @@ Return the list of overloads added or modified since the last given version para
 
 + Parameters
     + version (required, number, `20141123101010`) ... String representing the version that will be used to filter the returned objects.
-    + limit (optional, number, `10`) ... The number of elements retuned limit (max 300)
-    + page (optional, number, `2`) ... The page to be returned
+    + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page =`1` (optional, number, `2`) ... The page to be returned
 
 + Response 200 (application/json)
 
@@ -2858,7 +2899,7 @@ Return the overload defined for the given external id
 
 
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
             "errorCode":"404",
@@ -2936,7 +2977,7 @@ Delete an overload for the content.
 
 + Response 200 (application/json)
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -2951,8 +2992,8 @@ This API provide search facilities
 Search for lists
 
 + Parameters
-    + limit (optional, number, `10`) ... The number of elements retuned limit (max 300)
-    + page (optional, number, `2`) ... The page to be returned
+    + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page =`1` (optional, number, `2`) ... The page to be returned
 
 ### Get lists [GET]
 + Response 200 (application/json)
@@ -3015,16 +3056,16 @@ Search for lists
         }
 
 # Group Bulk
-In order to perform the same operation on multiple object we provide a Bulk API with these operations :
+In order to perform the same operation on multiple object we provide a Bulk API with these operations:
 
-- See also
-- Overload
+* See also
+* Overload
 
 ## See also [/api/bulk/seealso]
-Return the seealso information for the given list of content id
+Return the `seealso` information for the given list of `content id`.
 
 ### Get see also [POST]
-Return the seeAlso for the given content id list. If a given content id is not found it will not appear in the response structure.
+Return the `seealso` for the given content id list. If a given content id is not found it will not appear in the response structure.
 
 + Request (application/json)
 
@@ -3044,10 +3085,10 @@ Return the seeAlso for the given content id list. If a given content id is not f
         }
 
 ## Overload [/api/overloads/bulk/external]
-Return the seealso information for the given list of content id
+Return the `seealso` information for the given list of `content id`.
 
 ### Get overloads [POST]
-Return the overloads for the given content id list. If a given content id is not found it will not appear in the
+Return the `overloads` for the given `content id` list. If a given content id is not found it will not appear in the
 response structure.
 
 + Request (application/json)
@@ -3104,8 +3145,7 @@ response structure.
 The Channel API provides edito on channels. 
 Channel are created by SIP+ who provide basic informations. Other user are allowed to update some basic field like `name` and `shortName`.
 
-
-## Types list [/api/channels/types]
+## Channel types list [/api/channels/types]
 
 Retrieve channel types list
 
@@ -3140,140 +3180,145 @@ Retrieve channel types list
 
 
 
-## Channels list [/api/channels]
+## Channels list [/api/channels?page={page}&limit={limit}]
 
-Retrieve channels list
+Retrieve the `channels` list.
+
++ Parameters
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Channel list [GET]
 + Response 200 (application/json)
 
-```json
-    {
-        "data": [
-            {
-                "id": 416,
-                "name": "BE IN MAX 7",
-                "type": 1,
-                "definition": "SD",
-                "beginDate": "2013-06-25T10:42:08.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2013-07-11T16:59:59.000+0000",
-                "isMaster": true
-            },
-            {
-                "id": 417,
-                "name": "BE IN MAX 8",
-             a   "type": 1,
-                "definition": "SD",
-                "beginDate": "2013-06-25T10:42:08.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2013-07-11T16:59:59.000+0000",
-                "isMaster": true
-            },
-            {
-                "id": 418,
-                "name": "BE IN MAX 9",
-                "type": 1,
-                "definition": "SD",
-                "beginDate": "2013-06-25T10:42:08.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2013-07-11T16:59:59.000+0000",
-                "isMaster": true
-            },
-            {
-                "id": 380,
-                "name": "BE IN SPORTS 1",
-                "type": 1,
-                "definition": "SD",
-                "beginDate": "2013-06-25T00:00:00.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2014-03-13T00:00:00.000+0000",
-                "isMaster": true
-            },
-            {
-                "id": 381,
-                "name": "BE IN SPORTS 1 HD",
-                "type": 1,
-                "definition": "HD",
-                "beginDate": "2013-06-25T00:00:00.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2014-03-13T00:00:00.000+0000",
-                "isMaster": true,
-                "childs": [
-                    382
-                ]
-            },
-            {
-                "id": 382,
-                "name": "BE IN SPORTS 1 HD DUPLI",
-                "type": 1,
-                "definition": "HD",
-                "beginDate": "2013-06-25T00:00:00.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2014-03-13T00:00:00.000+0000",
-                "master": 381,
-                "isMaster": false
-            },
-            {
-                "id": 383,
-                "name": "BE IN SPORTS 2",
-                "type": 1,
-                "definition": "SD",
-                "beginDate": "2013-06-25T00:00:00.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2015-02-24T00:00:00.000+0000",
-                "isMaster": true
-            },
-            {
-                "id": 384,
-                "name": "BE IN SPORTS 2 HD",
-                "type": 1,
-                "definition": "HD",
-                "beginDate": "2013-06-25T00:00:00.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2014-03-13T00:00:00.000+0000",
-                "isMaster": true,
-                "childs": [
-                    385
-                ]
-            },
-            {
-                "id": 385,
-                "name": "BE IN SPORTS 2 HD DUPLI",
-                "type": 1,
-                "definition": "HD",
-                "beginDate": "2013-06-25T00:00:00.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2014-03-13T00:00:00.000+0000",
-                "master": 384,
-                "isMaster": false
-            },
-            {
-                "id": 98,
-                "name": "BEST OF SHOPPING",
-                "type": 1,
-                "definition": "SD",
-                "beginDate": "2013-06-25T10:42:08.000+0000",
-                "creationDate": "2013-06-25T10:42:08.000+0000",
-                "lastUpdate": "2013-07-11T16:59:59.000+0000",
-                "isMaster": true
+
+        {
+            "data": [
+                {
+                    "id": 416,
+                    "name": "BE IN MAX 7",
+                    "type": 1,
+                    "definition": "SD",
+                    "beginDate": "2013-06-25T10:42:08.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2013-07-11T16:59:59.000+0000",
+                    "isMaster": true
+                },
+                {
+                    "id": 417,
+                    "name": "BE IN MAX 8",
+                    "type": 1,
+                    "definition": "SD",
+                    "beginDate": "2013-06-25T10:42:08.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2013-07-11T16:59:59.000+0000",
+                    "isMaster": true
+                },
+                {
+                    "id": 418,
+                    "name": "BE IN MAX 9",
+                    "type": 1,
+                    "definition": "SD",
+                    "beginDate": "2013-06-25T10:42:08.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2013-07-11T16:59:59.000+0000",
+                    "isMaster": true
+                },
+                {
+                    "id": 380,
+                    "name": "BE IN SPORTS 1",
+                    "type": 1,
+                    "definition": "SD",
+                    "beginDate": "2013-06-25T00:00:00.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2014-03-13T00:00:00.000+0000",
+                    "isMaster": true
+                },
+                {
+                    "id": 381,
+                    "name": "BE IN SPORTS 1 HD",
+                    "type": 1,
+                    "definition": "HD",
+                    "beginDate": "2013-06-25T00:00:00.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2014-03-13T00:00:00.000+0000",
+                    "isMaster": true,
+                    "childs": [
+                        382
+                    ]
+                },
+                {
+                    "id": 382,
+                    "name": "BE IN SPORTS 1 HD DUPLI",
+                    "type": 1,
+                    "definition": "HD",
+                    "beginDate": "2013-06-25T00:00:00.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2014-03-13T00:00:00.000+0000",
+                    "master": 381,
+                    "isMaster": false
+                },
+                {
+                    "id": 383,
+                    "name": "BE IN SPORTS 2",
+                    "type": 1,
+                    "definition": "SD",
+                    "beginDate": "2013-06-25T00:00:00.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2015-02-24T00:00:00.000+0000",
+                    "isMaster": true
+                },
+                {
+                    "id": 384,
+                    "name": "BE IN SPORTS 2 HD",
+                    "type": 1,
+                    "definition": "HD",
+                    "beginDate": "2013-06-25T00:00:00.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2014-03-13T00:00:00.000+0000",
+                    "isMaster": true,
+                    "childs": [
+                        385
+                    ]
+                },
+                {
+                    "id": 385,
+                    "name": "BE IN SPORTS 2 HD DUPLI",
+                    "type": 1,
+                    "definition": "HD",
+                    "beginDate": "2013-06-25T00:00:00.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2014-03-13T00:00:00.000+0000",
+                    "master": 384,
+                    "isMaster": false
+                },
+                {
+                    "id": 98,
+                    "name": "BEST OF SHOPPING",
+                    "type": 1,
+                    "definition": "SD",
+                    "beginDate": "2013-06-25T10:42:08.000+0000",
+                    "creationDate": "2013-06-25T10:42:08.000+0000",
+                    "lastUpdate": "2013-07-11T16:59:59.000+0000",
+                    "isMaster": true
+                }
+            ],
+            "paging": {
+                "next": "http://private-2812-bddpdedito.apiary-mock.com/api/channels?page=2"
             }
-        ],
-        "paging": {
-            "next": "http://private-2812-bddpdedito.apiary-mock.com/api/channels?page=2"
         }
-    }
-``` 
+
 
 ## Channel [/api/channels/{id}]
 
-When `id` is given, the operation target a single channel corresponding to this id.
+When `id` is given, the operation target a single `channel` corresponding to this `id`.
+
 + Parameters
   + id (required, number, `56379`) ... Numeric `id` of the channel.
 
-
 ### Retrieve a channel [GET]
-Return a single channel object
+
+Return a single `channel` with a specific `id`.
 
 + Response 200 (application/json)
 
@@ -3291,7 +3336,7 @@ Return a single channel object
             ]
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3319,168 +3364,175 @@ Update or create a channel object.
 
 + Response 201 (application/json)
 
-+ response 400 (application/json)
++ Response 400 (application/json)
 
         {
           "errorCode": "400",
           "message": "Reason"
         }
 
-## Media list [/api/channels/{id}/media]
+## Media list [/api/channels/{id}/media?page={page}&limit={limit}]
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the channel.
+  + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+  + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve media list for a channel [GET]
+
+Retrieve the `media list` for a `channel` with a specific `id`.
+
 + Response 200 (application/json)
 
-```json
-    {
-        "data": [
-            {
-                "type": "IMAGE",
-                "height": 40,
-                "width": 122,
-                "format": "image/png",
-                "name": "CHNNB_416_20121029.png",
-                "imgType": "CHNNB",
-                "rank": 1,
-                "id": 396268,
-                "validityDate": "2012-10-29T00:00:00.000+0000",
-                "updateDate": "2015-01-16T08:05:08.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNNB"
-            },
-            {
-                "type": "IMAGE",
-                "height": 40,
-                "width": 122,
-                "format": "image/png",
-                "name": "CHNNB_416_20121122.png",
-                "imgType": "CHNNB",
-                "rank": 1,
-                "id": 533445,
-                "validityDate": "2012-11-22T00:00:00.000+0000",
-                "updateDate": "2015-01-16T08:05:08.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNNB"
-            },
-            {
-                "type": "IMAGE",
-                "height": 480,
-                "width": 640,
-                "format": "image/png",
-                "name": "CHN43FN_416_20130826.png",
-                "imgType": "CHN43FN",
-                "rank": 1,
-                "id": 2953336,
-                "validityDate": "2013-08-26T00:00:00.000+0000",
-                "updateDate": "2015-03-11T08:03:44.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHN43FN"
-            },
-            {
-                "type": "IMAGE",
-                "height": 480,
-                "width": 640,
-                "format": "image/png",
-                "name": "CHN43FB_416_20130826.png",
-                "imgType": "CHN43FB",
-                "rank": 1,
-                "id": 2951403,
-                "validityDate": "2013-08-26T00:00:00.000+0000",
-                "updateDate": "2015-03-11T08:01:57.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHN43FB"
-            },
-            {
-                "type": "IMAGE",
-                "height": 480,
-                "width": 640,
-                "format": "image/png",
-                "name": "CHN43FB_416_20131219.png",
-                "imgType": "CHN43FB",
-                "rank": 1,
-                "id": 5409352,
-                "validityDate": "2013-12-19T00:00:00.000+0000",
-                "updateDate": "2015-03-11T08:01:57.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHN43FB"
-            },
-            {
-                "type": "IMAGE",
-                "height": 165,
-                "width": 440,
-                "format": "image/png",
-                "name": "CHNERR_416_20121029.png",
-                "imgType": "CHNERR",
-                "rank": 1,
-                "id": 394726,
-                "validityDate": "2012-10-29T00:00:00.000+0000",
-                "updateDate": "2015-01-16T08:04:28.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNERR"
-            },
-            {
-                "type": "IMAGE",
-                "height": 165,
-                "width": 440,
-                "format": "image/png",
-                "name": "CHNERR_416_20121122.png",
-                "imgType": "CHNERR",
-                "rank": 1,
-                "id": 531691,
-                "validityDate": "2012-11-22T00:00:00.000+0000",
-                "updateDate": "2015-01-16T08:04:28.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNERR"
-            },
-            {
-                "type": "IMAGE",
-                "height": 72,
-                "width": 106,
-                "format": "image/png",
-                "name": "CHNMOS_416_20121122.png",
-                "imgType": "CHNMOS",
-                "rank": 1,
-                "id": 532618,
-                "validityDate": "2012-11-22T00:00:00.000+0000",
-                "updateDate": "2015-01-16T08:04:53.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNMOS"
-            },
-            {
-                "type": "IMAGE",
-                "height": 72,
-                "width": 106,
-                "format": "image/png",
-                "name": "CHNMOS_416_20121029.png",
-                "imgType": "CHNMOS",
-                "rank": 1,
-                "id": 395532,
-                "validityDate": "2012-10-29T00:00:00.000+0000",
-                "updateDate": "2015-01-16T08:04:53.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNMOS"
-            },
-            {
-                "type": "IMAGE",
-                "height": 72,
-                "width": 106,
-                "format": "image/png",
-                "name": "CHNMOS_416_20121107.png",
-                "imgType": "CHNMOS",
-                "rank": 1,
-                "id": 532564,
-                "validityDate": "2012-11-07T00:00:00.000+0000",
-                "updateDate": "2015-01-16T08:04:53.000+0000",
-                "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNMOS"
+        {
+            "data": [
+                {
+                    "type": "IMAGE",
+                    "height": 40,
+                    "width": 122,
+                    "format": "image/png",
+                    "name": "CHNNB_416_20121029.png",
+                    "imgType": "CHNNB",
+                    "rank": 1,
+                    "id": 396268,
+                    "validityDate": "2012-10-29T00:00:00.000+0000",
+                    "updateDate": "2015-01-16T08:05:08.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNNB"
+                },
+                {
+                    "type": "IMAGE",
+                    "height": 40,
+                    "width": 122,
+                    "format": "image/png",
+                    "name": "CHNNB_416_20121122.png",
+                    "imgType": "CHNNB",
+                    "rank": 1,
+                    "id": 533445,
+                    "validityDate": "2012-11-22T00:00:00.000+0000",
+                    "updateDate": "2015-01-16T08:05:08.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNNB"
+                },
+                {
+                    "type": "IMAGE",
+                    "height": 480,
+                    "width": 640,
+                    "format": "image/png",
+                    "name": "CHN43FN_416_20130826.png",
+                    "imgType": "CHN43FN",
+                    "rank": 1,
+                    "id": 2953336,
+                    "validityDate": "2013-08-26T00:00:00.000+0000",
+                    "updateDate": "2015-03-11T08:03:44.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHN43FN"
+                },
+                {
+                    "type": "IMAGE",
+                    "height": 480,
+                    "width": 640,
+                    "format": "image/png",
+                    "name": "CHN43FB_416_20130826.png",
+                    "imgType": "CHN43FB",
+                    "rank": 1,
+                    "id": 2951403,
+                    "validityDate": "2013-08-26T00:00:00.000+0000",
+                    "updateDate": "2015-03-11T08:01:57.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHN43FB"
+                },
+                {
+                    "type": "IMAGE",
+                    "height": 480,
+                    "width": 640,
+                    "format": "image/png",
+                    "name": "CHN43FB_416_20131219.png",
+                    "imgType": "CHN43FB",
+                    "rank": 1,
+                    "id": 5409352,
+                    "validityDate": "2013-12-19T00:00:00.000+0000",
+                    "updateDate": "2015-03-11T08:01:57.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHN43FB"
+                },
+                {
+                    "type": "IMAGE",
+                    "height": 165,
+                    "width": 440,
+                    "format": "image/png",
+                    "name": "CHNERR_416_20121029.png",
+                    "imgType": "CHNERR",
+                    "rank": 1,
+                    "id": 394726,
+                    "validityDate": "2012-10-29T00:00:00.000+0000",
+                    "updateDate": "2015-01-16T08:04:28.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNERR"
+                },
+                {
+                    "type": "IMAGE",
+                    "height": 165,
+                    "width": 440,
+                    "format": "image/png",
+                    "name": "CHNERR_416_20121122.png",
+                    "imgType": "CHNERR",
+                    "rank": 1,
+                    "id": 531691,
+                    "validityDate": "2012-11-22T00:00:00.000+0000",
+                    "updateDate": "2015-01-16T08:04:28.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNERR"
+                },
+                {
+                    "type": "IMAGE",
+                    "height": 72,
+                    "width": 106,
+                    "format": "image/png",
+                    "name": "CHNMOS_416_20121122.png",
+                    "imgType": "CHNMOS",
+                    "rank": 1,
+                    "id": 532618,
+                    "validityDate": "2012-11-22T00:00:00.000+0000",
+                    "updateDate": "2015-01-16T08:04:53.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNMOS"
+                },
+                {
+                    "type": "IMAGE",
+                    "height": 72,
+                    "width": 106,
+                    "format": "image/png",
+                    "name": "CHNMOS_416_20121029.png",
+                    "imgType": "CHNMOS",
+                    "rank": 1,
+                    "id": 395532,
+                    "validityDate": "2012-10-29T00:00:00.000+0000",
+                    "updateDate": "2015-01-16T08:04:53.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNMOS"
+                },
+                {
+                    "type": "IMAGE",
+                    "height": 72,
+                    "width": 106,
+                    "format": "image/png",
+                    "name": "CHNMOS_416_20121107.png",
+                    "imgType": "CHNMOS",
+                    "rank": 1,
+                    "id": 532564,
+                    "validityDate": "2012-11-07T00:00:00.000+0000",
+                    "updateDate": "2015-01-16T08:04:53.000+0000",
+                    "url": "http://172.31.77.77:80/ServiceImage/ImageChaine?idchn=416&type=CHNMOS"
+                }
+            ],
+            "paging": {
+                "next": "http://private-2812-bddpdedito.apiary-mock.com/api/channels/416/media?Access-Token=4ADD57713B2E8C2151C42E3D7D326&page=2"
             }
-        ],
-        "paging": {
-            "next": "http://private-2812-bddpdedito.apiary-mock.com/api/channels/416/media?Access-Token=4ADD57713B2E8C2151C42E3D7D326&page=2"
         }
-    }
-```   
-          
-## Media [/api/channels/{idChannel}/media/{idMedia}]
+
+
+## Media [/api/channels/{channelId}/media/{mediaId}]
 
 + Parameters
-  + idChannel (required, number, `1`) ... Numeric `id` of the channel.
-  + idMedia (required, number, `1`) ... Numeric `id` of the media.
+  + channelId (required, number, `1`) ... Numeric `id` of the channel.
+  + mediaId (required, number, `1`) ... Numeric `id` of the media.
 
 ### Retrieve a channel media [GET]
+
+Retrieve the `mediaId` for a `channel` with a specific `id`.
+
 + Response 200 (application/json)
 
         {
@@ -3497,7 +3549,7 @@ Update or create a channel object.
           "url" : "http://127.0.0.1/images/40420/2013-12-26T08:05:32Z.jpg"
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3522,7 +3574,7 @@ Update or create a channel object.
           "validityDate": "2012-09-10T21:44:25.000+0000"
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3533,7 +3585,7 @@ Update or create a channel object.
 
 + Response 200 (application/json)
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3542,7 +3594,7 @@ Update or create a channel object.
 
 # Group Partner
 
-Provide partner identity information
+Provide partner identity information.
 
 ## Partner [/api/partners/{id}]
 
@@ -3550,6 +3602,9 @@ Provide partner identity information
   + id (required, number, `1`) ... Numeric `id` of the partner.
 
 ### Retrieve a partner [GET]
+
+Retrieve information for a `partners` with a specific `id`.
+
 + Response 200 (application/json)
 
         {
@@ -3559,7 +3614,7 @@ Provide partner identity information
           "updateDate" : "2015-01-19T20:18:12.000+0100"
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3568,13 +3623,20 @@ Provide partner identity information
 
 # Group Jobs
 
-Provide jobs information
+Provide jobs information.
 
-## List [/api/jobs/]
+## List [/api/jobs?page={page}&limit={limit}]
 
 Return the list of jobs.
 
++ Parameters
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
+
 ### Retrieve jobs list [GET]
+
+Retrieve the list of available `jobs`.
+
 + Response 200 (application/json)
 
         {
@@ -3602,11 +3664,10 @@ Return the list of jobs.
 
 ## Job [/api/jobs/{id}]
 
-Return specified job.
+Retrieve a `jobs` with a specific `id`.
 
 + Parameters
   + id (required, number, `1`) ... Numeric `id` of the job.
-
 
 ### Retrieve a job from its id [GET]
 + Response 200 (application/json)
@@ -3619,7 +3680,7 @@ Return specified job.
             "updateDate": "2015-01-19T20:18:12.000+0100"
           }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3628,21 +3689,24 @@ Return specified job.
 
 # Group Tags
 
-A tag is used to define a common characteristic. We provide 4 types of tags :
+A tag is used to define a common characteristic. We provide 5 types of tags:
 
-- GENRE_CANAL
-- SOUS_GENRE_CANAL
-- EDUCTION
-- MOTCLE
-- TAG
+* GENRE_CANAL
+* SOUS_GENRE_CANAL
+* EDUCATION
+* MOTCLE
+* TAG
 
 ## Types list [/api/tags/?limit={limit}&page={page}]
 
 + Parameters
-    + limit (optional, number, `10`) ... The number of elements retuned limit (max 300)
-    + page (optional, number, `2`) ... The page to be returned
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
     
 ### Retrieve tag types [GET]
+
+Retrieve the list of available `tags` types.
+
 + Response 200 (application/json)
         
         {
@@ -3670,11 +3734,18 @@ A tag is used to define a common characteristic. We provide 4 types of tags :
         }
 
 
-## Tags list [/api/tags/{type}]
+## Tags list [/api/tags/{type}?page={page}&limit={limit}]
 
 Return the list of tags for the given type.
 
++ Parameters
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
+
 ### Retrieve tags for a type [GET]
+
+Retrieve the list of available `tags` for a specific `type`.
+
 + Response 200 (application/json)
 
         {
@@ -3693,7 +3764,7 @@ Return the list of tags for the given type.
           }
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3703,6 +3774,7 @@ Return the list of tags for the given type.
 ### Add a tag [POST]
 
 Add a new tag. Only for EDUCATION and MOTCLE.
+For H:API Outil Auteur, we only use the **MOTCLE** type.
 
 + Request (application/json)
 
@@ -3720,7 +3792,7 @@ Add a new tag. Only for EDUCATION and MOTCLE.
 
 ## Tag [/api/tags/{type}/{id}]
 
-Manage the specified tag
+Manage the specified tag.
 
 ### Retrieve a tag [GET]
 + Response 200 (application/json)
@@ -3730,7 +3802,7 @@ Manage the specified tag
           "label": "Cinéma"
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3738,9 +3810,14 @@ Manage the specified tag
         }
 
 
-## Sub tags [/api/tags/{type}/{id}/childs]
+## Sub tags [/api/tags/{type}/{id}/children?page={page}&limit={limit}]
 
 Return the sub tags
+
++ Parameters
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
+
 ### Return the sub tags [GET]
 
 + Response 200 (application/json)
@@ -3767,7 +3844,7 @@ Return the sub tags
             }
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3776,11 +3853,15 @@ Return the sub tags
 
 # Group People
 
-Every human being in the world can be found using this API. Yes you too !
+Every human being in the world can be found using this API. Yes you too!
 
-## List [/api/people]
+## List [/api/people?page={page}&limit={limit}]
 
 Return the list of people.
+
++ Parameters
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve events [GET]
 + Response 200 (application/json)
@@ -3798,13 +3879,15 @@ Return the list of people.
 
 ## People [/api/people/{id}]
 
-Return the specified people detail
+Return the specified people detail.
 
 + Parameters
     + id (required, number, `1`) ... Numeric `id` of the people.
 
-
 ### Retrieve events [GET]
+
+Retrieve information of `people` with a specific `id`.
+
 + Response 200 (application/json)
 
           {
@@ -3813,7 +3896,7 @@ Return the specified people detail
             "id" : 1
           }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3825,10 +3908,10 @@ Return the specified people detail
 A media is a image or a video that can be linked with people, content, channels... A media can exist without the need to be linked to a people or a content...
 Each object that accept media provide a `/media/{mediaId}` method used to link or unlink the object and a media
 
-## Media [/api/media]
+## Media [/api/media?page={page}&limit={limit}]
 
 Return the list of media. A media could be an `IMAGE` or a `VIDEO`. 
-The exposed url should be used to retrieve the content
+The exposed url should be used to retrieve the content.
 
 Provided image type are :
 
@@ -3845,8 +3928,14 @@ Provided image type are :
 | MEANL        |
 | MEAEUREKA    |
 
++ Parameters
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve media list [GET]
+
+Retrieve the list of `media`.
+
 + Response 200 (application/json)
 
         {
@@ -3912,8 +4001,9 @@ Bring media update capacities
 + Parameters
     + id (required, number, `1`) ... Numeric `id` of the media.
 
-
 ### Retrieve media [GET]
+
+Retrieve information of a `media` with a specific `id`.
 
 + Response 200 (application/json)
 
@@ -3930,7 +4020,7 @@ Bring media update capacities
           "url" : "http://127.0.0.1/api/media/191281/file/2013-12-26T08:05:32Z.jpg"
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3939,18 +4029,18 @@ Bring media update capacities
 
 ### Delete media [DELETE]
 
-A media can by deleted only if there is no existing link with an object
+A media can by deleted only if there is no existing link with an object.
 
 + Response 200 (application/json)
 
-+ response 403 (application/json)
++ Response 403 (application/json)
 
         {
           "errorCode": "403",
           "message": "Reason"
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3967,7 +4057,6 @@ The HTTP headers to use when making a simple upload request include:
 - `Content-Type` : Set to one of the method's accepted upload media data types, specified in the API reference.
 - `Content-Length` : Set to the number of bytes you are uploading.
 
-
 The media file can be retrieved or uploaded using these methods
 
 + Parameters
@@ -3977,7 +4066,7 @@ The media file can be retrieved or uploaded using these methods
 
 + Response 200 (application/json)
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
@@ -3994,11 +4083,18 @@ The media file can be retrieved or uploaded using these methods
 
 An event represent a situation in with a list of content can be linked. It can be a academy awards, a music festival, a sport competition, ...
 
-## Events [/api/events]
+## Events [/api/events?page={page}&limit={limit}]
 
-Return the list of events.
+Return the list of events. An event could be a music festival, academy awards, ...
+
++ Parameters
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve events [GET]
+
+Retrieve the `events` list.
+
 + Response 200 (application/json)
 
         {
@@ -4022,15 +4118,19 @@ Return the list of events.
           }
         }
         
-## Events date [/api/events/{eventId}]
+## Events date [/api/events/{eventId}?page={page}&limit={limit}]
 
-Return the list of event occurence date.
+Return the list of event occurence date (year).
 
 + Parameters
     + eventId (required, number, `1`) ... Numeric `id` of the event.
-
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve happening date [GET]
+
+Retrieve the list of event occurence date for an `eventId`.
+
 + Response 200 (application/json)
 
         {
@@ -4048,23 +4148,27 @@ Return the list of event occurence date.
           }
         }
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
           "message": "Reason"
         }
         
-## Events rewards [/api/events/{eventId}/{year}/rewards]
+## Event rewards [/api/events/{eventId}/{year}/rewards?page={page}&limit={limit}]
 
-Return the list of rewards delivered. An event could be a music festival, academy awards, ...
+Return the list of rewards delivered for an event.
 
 + Parameters
     + eventId (required, number, `1`) ... Numeric `id` of the event.
     + year (required, number, `2011`) ... Numeric `id` of the year.
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
+### Retrieve event rewards [GET]
 
-### Retrieve events [GET]
+Return the list of rewards delivered for an `eventId` and for an `year`.
+
 + Response 200 (application/json)
 
         {
@@ -4084,23 +4188,28 @@ Return the list of rewards delivered. An event could be a music festival, academ
           }
         }        
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
           "message": "Reason"
         }
 
-## Rewarded contents [/api/events/{eventId}/{year}/rewards/{rewardId}]
+## Rewarded contents [/api/events/{eventId}/{year}/rewards/{rewardId}?page={page}&limit={limit}]
 
-Return the list of events. An event could be a music festival, academy awards, ...
+Return the list of contents rewarded for an event.
 
 + Parameters
     + eventId (required, number, `1`) ... Numeric `id` of the event.
     + year (required, number, `2011`) ... Numeric `id` of the year.
     + rewardId (required, number, `1`) ... Numeric `id` of the reward.
+    + limit = `10 `(optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page = `1` (optional, number, `2`) ... The page to be returned
 
 ### Retrieve events [GET]
+
+Return the list of rewarded contents for an `eventId` and for an `year`.
+
 + Response 200 (application/json)
 
         [
@@ -4165,7 +4274,7 @@ Return the list of events. An event could be a music festival, academy awards, .
         ]
         
 
-+ response 404 (application/json)
++ Response 404 (application/json)
 
         {
           "errorCode": "404",
