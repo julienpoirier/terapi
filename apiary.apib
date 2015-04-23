@@ -1552,38 +1552,8 @@ This method allows users to create content (only itemType:"collection" allowed).
   + full = `false` (optional, boolean, `true`) ... Ask for full object or not
 
 ### Retrieve a content [GET]
-+ Response 200 (application/json)
 
-        {
-            "objectType": "UNIT",
-            "contentType": "FILM",
-            "itemType": "movie",
-            "titles": {
-                "originalTitle": "The Artist",
-                "epgTitle": "The Artist",
-                "titleDivisible": "The Artist",
-                "subTitleDivisible": "Film Comédie dramatique"
-            },
-            "synopsis": {
-                "small": "En 1927, un acteur, vedette du cinéma muet, sombre dans l'oubli avec l'arrivée du parlant et assiste à l'ascension irrésistible d'une ancienne figurante.",
-                "medium": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma muet, mais l'irruption du parlant va mettre un terme brutal à sa carrière. L'acteur ne tourne plus et sombre dans l'oubli. A l'inverse, Peppy Miller, une jeune figurante, devient la nouvelle étoile de Hollywood...",
-                "large": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma, et sa célébrité n'a d'égal que son orgueil. Son producteur, Al Zimmer, l'invite à la projection de son dernier film, à la sortie duquel il croise Peppy Miller, une comédienne débutante. La jeune femme devient figurante dans un long métrage en tournage aux côtés de George. Les deux acteurs se plaisent aussitôt, mais George refuse de s'engager. C'est alors que le parlant fait son apparition. George, persuadé que cette technologie est sans avenir, va jusqu'à se séparer d'Al pour produire un film muet. Parallèlement, Peppy devient la nouvelle égérie du studio..."
-            },
-            "color": "0",
-            "productionNationality": "France - Belgique",
-            "productionNationalityCode": ["FR","BE"],
-            "productionYear": "2011",
-            "updateDate": "2014-12-08T20:12:08.000+0000",
-            "id": 585877,
-            "num": 1,
-            "lang": "fr",
-            "version": "20141208201208",
-            "ratingCSA": 1,
-            "ageRange": 2,
-            "duration": "100",
-            "boost": 32715,
-            "diffusionDate": "2012-10-05T18:55:00.000+0000"
-        }
+Retrieve a `content` with a specific `id`.
         
 + Response 200 (application/json)
 
@@ -1945,6 +1915,39 @@ This method allows users to create content (only itemType:"collection" allowed).
            "diffusionDate":"2012-10-05T18:55:00.000+0000"
         }
 
++ Response 200 (application/json)
+
+        {
+            "objectType": "UNIT",
+            "contentType": "FILM",
+            "itemType": "movie",
+            "titles": {
+                "originalTitle": "The Artist",
+                "epgTitle": "The Artist",
+                "titleDivisible": "The Artist",
+                "subTitleDivisible": "Film Comédie dramatique"
+            },
+            "synopsis": {
+                "small": "En 1927, un acteur, vedette du cinéma muet, sombre dans l'oubli avec l'arrivée du parlant et assiste à l'ascension irrésistible d'une ancienne figurante.",
+                "medium": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma muet, mais l'irruption du parlant va mettre un terme brutal à sa carrière. L'acteur ne tourne plus et sombre dans l'oubli. A l'inverse, Peppy Miller, une jeune figurante, devient la nouvelle étoile de Hollywood...",
+                "large": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma, et sa célébrité n'a d'égal que son orgueil. Son producteur, Al Zimmer, l'invite à la projection de son dernier film, à la sortie duquel il croise Peppy Miller, une comédienne débutante. La jeune femme devient figurante dans un long métrage en tournage aux côtés de George. Les deux acteurs se plaisent aussitôt, mais George refuse de s'engager. C'est alors que le parlant fait son apparition. George, persuadé que cette technologie est sans avenir, va jusqu'à se séparer d'Al pour produire un film muet. Parallèlement, Peppy devient la nouvelle égérie du studio..."
+            },
+            "color": "0",
+            "productionNationality": "France - Belgique",
+            "productionNationalityCode": ["FR","BE"],
+            "productionYear": "2011",
+            "updateDate": "2014-12-08T20:12:08.000+0000",
+            "id": 585877,
+            "num": 1,
+            "lang": "fr",
+            "version": "20141208201208",
+            "ratingCSA": 1,
+            "ageRange": 2,
+            "duration": "100",
+            "boost": 32715,
+            "diffusionDate": "2012-10-05T18:55:00.000+0000"
+        }
+
 + Response 404 (application/json)
 
         {
@@ -2182,212 +2185,212 @@ Retrieve all `members` of a content with a specific `id`.
 
 + Response 200 (application/json)
 
-    {
-        "data": [
-            {
-                "rank": 1,
-                "role": "George Valentin",
-                "people": {
-                    "id": 1477,
-                    "firstName": "Jean",
-                    "lastName": "Dujardin"
-                },
-                "function": {
-                    "id": 2,
-                    "name": "Acteur",
-                    "rank": 12,
-                    "prefix": "Avec : "
-                },
-                "awards": [
-                    {
-                        "festivalId": 10,
-                        "festivalName": "Oscars",
-                        "festivalCountry": "Etats-Unis",
-                        "year": 2012,
-                        "awardId": 11,
-                        "awardName": "Oscar du meilleur acteur",
-                        "order": 11
-                    }
-                ]
-            },
-            {
-                "rank": 1,
-                "role": "N/A",
-                "people": {
-                    "id": 23711,
-                    "firstName": "Michel",
-                    "lastName": "Hazanavicius"
-                },
-                "function": {
-                    "id": 4,
-                    "name": "Réalisateur",
+        {
+            "data": [
+                {
                     "rank": 1,
-                    "prefix": "De : "
-                },
-                "awards": [
-                    {
-                        "festivalId": 10,
-                        "festivalName": "Oscars",
-                        "festivalCountry": "Etats-Unis",
-                        "year": 2012,
-                        "awardId": 8,
-                        "awardName": "Oscar du meilleur réalisateur",
-                        "order": 8
+                    "role": "George Valentin",
+                    "people": {
+                        "id": 1477,
+                        "firstName": "Jean",
+                        "lastName": "Dujardin"
                     },
-                    {
-                        "festivalId": 7,
-                        "festivalName": "César",
-                        "festivalCountry": "France",
-                        "year": 2012,
-                        "awardId": 9,
-                        "awardName": "César du meilleur réalisateur",
-                        "order": 9
-                    }
-                ]
-            },
-            {
-                "rank": 2,
-                "role": "Peppy Miller",
-                "people": {
-                    "id": 1622,
-                    "firstName": "Bérénice",
-                    "lastName": "Bejo"
+                    "function": {
+                        "id": 2,
+                        "name": "Acteur",
+                        "rank": 12,
+                        "prefix": "Avec : "
+                    },
+                    "awards": [
+                        {
+                            "festivalId": 10,
+                            "festivalName": "Oscars",
+                            "festivalCountry": "Etats-Unis",
+                            "year": 2012,
+                            "awardId": 11,
+                            "awardName": "Oscar du meilleur acteur",
+                            "order": 11
+                        }
+                    ]
                 },
-                "function": {
-                    "id": 2,
-                    "name": "Acteur",
-                    "rank": 12,
-                    "prefix": "Avec : "
+                {
+                    "rank": 1,
+                    "role": "N/A",
+                    "people": {
+                        "id": 23711,
+                        "firstName": "Michel",
+                        "lastName": "Hazanavicius"
+                    },
+                    "function": {
+                        "id": 4,
+                        "name": "Réalisateur",
+                        "rank": 1,
+                        "prefix": "De : "
+                    },
+                    "awards": [
+                        {
+                            "festivalId": 10,
+                            "festivalName": "Oscars",
+                            "festivalCountry": "Etats-Unis",
+                            "year": 2012,
+                            "awardId": 8,
+                            "awardName": "Oscar du meilleur réalisateur",
+                            "order": 8
+                        },
+                        {
+                            "festivalId": 7,
+                            "festivalName": "César",
+                            "festivalCountry": "France",
+                            "year": 2012,
+                            "awardId": 9,
+                            "awardName": "César du meilleur réalisateur",
+                            "order": 9
+                        }
+                    ]
                 },
-                "awards": [
-                    {
-                        "festivalId": 7,
-                        "festivalName": "César",
-                        "festivalCountry": "France",
-                        "year": 2012,
-                        "awardId": 12,
-                        "awardName": "César de la meilleur actrice",
-                        "order": 12
-                    }
-                ]
-            },
-            {
-                "rank": 3,
-                "role": "Al Zimmer",
-                "people": {
-                    "id": 1018,
-                    "firstName": "John",
-                    "lastName": "Goodman"
+                {
+                    "rank": 2,
+                    "role": "Peppy Miller",
+                    "people": {
+                        "id": 1622,
+                        "firstName": "Bérénice",
+                        "lastName": "Bejo"
+                    },
+                    "function": {
+                        "id": 2,
+                        "name": "Acteur",
+                        "rank": 12,
+                        "prefix": "Avec : "
+                    },
+                    "awards": [
+                        {
+                            "festivalId": 7,
+                            "festivalName": "César",
+                            "festivalCountry": "France",
+                            "year": 2012,
+                            "awardId": 12,
+                            "awardName": "César de la meilleur actrice",
+                            "order": 12
+                        }
+                    ]
                 },
-                "function": {
-                    "id": 2,
-                    "name": "Acteur",
-                    "rank": 12,
-                    "prefix": "Avec : "
+                {
+                    "rank": 3,
+                    "role": "Al Zimmer",
+                    "people": {
+                        "id": 1018,
+                        "firstName": "John",
+                        "lastName": "Goodman"
+                    },
+                    "function": {
+                        "id": 2,
+                        "name": "Acteur",
+                        "rank": 12,
+                        "prefix": "Avec : "
+                    },
+                    "awards": []
                 },
-                "awards": []
-            },
-            {
-                "rank": 4,
-                "role": "Clifton",
-                "people": {
-                    "id": 25450,
-                    "firstName": "James",
-                    "lastName": "Cromwell"
+                {
+                    "rank": 4,
+                    "role": "Clifton",
+                    "people": {
+                        "id": 25450,
+                        "firstName": "James",
+                        "lastName": "Cromwell"
+                    },
+                    "function": {
+                        "id": 2,
+                        "name": "Acteur",
+                        "rank": 12,
+                        "prefix": "Avec : "
+                    },
+                    "awards": []
                 },
-                "function": {
-                    "id": 2,
-                    "name": "Acteur",
-                    "rank": 12,
-                    "prefix": "Avec : "
+                {
+                    "rank": 5,
+                    "role": "Constance",
+                    "people": {
+                        "id": 17557,
+                        "firstName": "Missy",
+                        "lastName": "Pyle"
+                    },
+                    "function": {
+                        "id": 2,
+                        "name": "Acteur",
+                        "rank": 12,
+                        "prefix": "Avec : "
+                    },
+                    "awards": []
                 },
-                "awards": []
-            },
-            {
-                "rank": 5,
-                "role": "Constance",
-                "people": {
-                    "id": 17557,
-                    "firstName": "Missy",
-                    "lastName": "Pyle"
+                {
+                    "rank": 6,
+                    "role": "Doris",
+                    "people": {
+                        "id": 16975,
+                        "firstName": "Penelope Ann",
+                        "lastName": "Miller"
+                    },
+                    "function": {
+                        "id": 2,
+                        "name": "Acteur",
+                        "rank": 12,
+                        "prefix": "Avec : "
+                    },
+                    "awards": []
                 },
-                "function": {
-                    "id": 2,
-                    "name": "Acteur",
-                    "rank": 12,
-                    "prefix": "Avec : "
+                {
+                    "rank": 7,
+                    "role": "Norma",
+                    "people": {
+                        "id": 6961,
+                        "firstName": "Bitsie",
+                        "lastName": "Tulloch"
+                    },
+                    "function": {
+                        "id": 2,
+                        "name": "Acteur",
+                        "rank": 12,
+                        "prefix": "Avec : "
+                    },
+                    "awards": []
                 },
-                "awards": []
-            },
-            {
-                "rank": 6,
-                "role": "Doris",
-                "people": {
-                    "id": 16975,
-                    "firstName": "Penelope Ann",
-                    "lastName": "Miller"
+                {
+                    "rank": 8,
+                    "role": "la servante",
+                    "people": {
+                        "id": 17187,
+                        "firstName": "Beth",
+                        "lastName": "Grant"
+                    },
+                    "function": {
+                        "id": 2,
+                        "name": "Acteur",
+                        "rank": 12,
+                        "prefix": "Avec : "
+                    },
+                    "awards": []
                 },
-                "function": {
-                    "id": 2,
-                    "name": "Acteur",
-                    "rank": 12,
-                    "prefix": "Avec : "
-                },
-                "awards": []
-            },
-            {
-                "rank": 7,
-                "role": "Norma",
-                "people": {
-                    "id": 6961,
-                    "firstName": "Bitsie",
-                    "lastName": "Tulloch"
-                },
-                "function": {
-                    "id": 2,
-                    "name": "Acteur",
-                    "rank": 12,
-                    "prefix": "Avec : "
-                },
-                "awards": []
-            },
-            {
-                "rank": 8,
-                "role": "la servante",
-                "people": {
-                    "id": 17187,
-                    "firstName": "Beth",
-                    "lastName": "Grant"
-                },
-                "function": {
-                    "id": 2,
-                    "name": "Acteur",
-                    "rank": 12,
-                    "prefix": "Avec : "
-                },
-                "awards": []
-            },
-            {
-                "rank": 9,
-                "role": "Otto",
-                "people": {
-                    "id": 6958,
-                    "firstName": "Stuart",
-                    "lastName": "Pankin"
-                },
-                "function": {
-                    "id": 2,
-                    "name": "Acteur",
-                    "rank": 12,
-                    "prefix": "Avec : "
-                },
-                "awards": []
+                {
+                    "rank": 9,
+                    "role": "Otto",
+                    "people": {
+                        "id": 6958,
+                        "firstName": "Stuart",
+                        "lastName": "Pankin"
+                    },
+                    "function": {
+                        "id": 2,
+                        "name": "Acteur",
+                        "rank": 12,
+                        "prefix": "Avec : "
+                    },
+                    "awards": []
+                }
+            ],
+            "paging": {
+                "next": "http://127.0.0.1:8080/api/contents/585877/members?Access-Token=4ADD57713B2E8C2151C42E3D7D326&page=2"
             }
-        ],
-        "paging": {
-            "next": "http://127.0.0.1:8080/api/contents/585877/members?Access-Token=4ADD57713B2E8C2151C42E3D7D326&page=2"
         }
-    }
 
 ## Reviews list [/api/contents/{id}/reviews?page={page}&limit={limit}]
 
