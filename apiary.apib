@@ -1452,88 +1452,46 @@ For a UI purpose a third attribute is exposed `itemType`. In V1 the value is aut
 ### Create a content [POST]
 
 This method allows users to create content (only itemType:"collection" allowed).
+The locale has to be in the french language
 
 + Request (application/json)
 
         {
-          "objectType": "LIST",
-          "contentType": "AUTRE",
-          "titles": {
-            "epgTitle": "Les bombes des...",
-            "titleDivisible": "Les bombes des séries TV",
-            "subTitleDivisible": "Divertissement"
-          },
-          "synopsis": {},
-          "lang": "fr",
-          "ratingCSA": 4,
-          "duration": "0",
-          "boost": 1,
-          "data": {
-            "itemType": "collection",
-            "id": "COLL_SERIES_BOMBES",
-            "revision": 315529309000,
-            "title": "Les bombes des s??ries TV",
-            "accroche": "Belles et exigeantes, ces femmes nous mettent les sens en ??moi.",
-            "longAccroche": "Belles et exigeantes, ces femmes nous mettent les sens en ??moi.",
-            "creationDate": "2013-12-26",
-            "ratingCSA": 4,
-            "idKey": "mvs_cat_2114",
-            "tags": [
-              {
-                "type": "CLASSIFICATION",
-                "name": "Playlists de s??ries",
-                "displayName": "/Canalplay/Listes CPI/Infinity S??ries/Playlists de s??ries",
-                "idKey": "Inf_Series_Collections"
-              }
-            ],
-            "maxResult": 2000,
-            "defaultSorts": [
-              {
-                "itemType": "sortElement",
-                "id": "seBoostDesc",
-                "displayTitle": "Boost desc",
-                "sortKey": "boost",
-                "sortOrder": "desc",
-                "displayName": "Boost desc"
-              },
-              {
-                "itemType": "sortElement",
-                "id": "seDiffDateDesc",
-                "displayTitle": "Date de diffusion desc",
-                "sortKey": "diffusionDate",
-                "sortOrder": "desc",
-                "displayName": "Date de diffusion desc"
-              }
-            ],
-            "rules": [
-              {
-                "id": "5800002",
-                "itemType": "manualRule",
-                "maxResult": 2000,
-                "contents": [
-                  "serie_cat113750364",
-                  "serie_cat112930006",
-                  "serie_cat110710161",
-                  "serie_cat109220219",
-                  "serie_cat113750413",
-                  "serie_cat109770233",
-                  "serie_cat109220236",
-                  "serie_cat113450035",
-                  "serie_cat109860021",
-                  "serie_cat110710026",
-                  "serie_cat113210034",
-                  "serie_cat109220162"
-                ]
-              }
-            ]
-          }
+            "titles": {
+                "originalTitle": "originalTitle",
+                "epgTitle": "titreepg1DE"
+            }
+        }
+        
+
++ Request (application/json)
+
+        {
+            "duration":120,
+            "boost":80027,
+            "rubricId":100000,
+            "categoryId":100000,
+            "data":"{\"field\": \"value1\"}",
+            "titles": {
+                "originalTitle": "originalTitle",
+                "epgTitle": "titreepgFR",
+                "titleDivisible": "titreLabelliseSecableFR",
+                "titleIndivisible": "titreLabelliseInsecableFR",
+                "subTitleDivisible": "sousTitreLabelliseSecableFR",
+                "subTitleIndivisible": "sousTitreLabelliseInsecableFR"
+            },
+            "synopsis": {
+                "small": "resumecourtFR",
+                "large": "resumeLongFR",
+                "medium": "resumemoyen1FR"
+            }
         }
 
 + Response 200 (application/json)
 
   + Headers
 
-            Location: /api/contents/99999999/summary
+            Location: /api/contents/99999999/
 
 + response 400 (application/json)
 
@@ -1951,24 +1909,29 @@ This method allows users to create content (only itemType:"collection" allowed).
 
 ### Update a content [PUT]
 
-This method allow users to update a content summary. Only these field are updatable
-
+This method allow users to update a content. Only these field are updatable
+The update is based on the locale used for the request.
 Collections rules could be also updated using this method.
 
 + Request (application/json)
 
         {
-          "titles": {
-            "originalTitle": "The Artist",
-            "epgTitle": "The Artist",
-            "titleDivisible": "The Artist",
-            "subTitleDivisible": "Film Comédie dramatique"
-          },
-          "synopsis": {
-            "small": "En 1927, un acteur, vedette du cinéma muet, sombre dans l'oubli avec l'arrivée du parlant et assiste à l'ascension irrésistible d'une ancienne figurante.",
-            "medium": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma muet, mais l'irruption du parlant va mettre un terme brutal à sa carrière. L'acteur ne tourne plus et sombre dans l'oubli. A l'inverse, Peppy Miller, une jeune figurante, devient la nouvelle étoile de Hollywood...",
-            "large": "A Hollywood, en 1927, George Valentin compte parmi les plus grandes vedettes du cinéma, et sa célébrité n'a d'égal que son orgueil. Son producteur, Al Zimmer, l'invite à la projection de son dernier film, à la sortie duquel il croise Peppy Miller, une comédienne débutante. La jeune femme devient figurante dans un long métrage en tournage aux côtés de George. Les deux acteurs se plaisent aussitôt, mais George refuse de s'engager. C'est alors que le parlant fait son apparition. George, persuadé que cette technologie est sans avenir, va jusqu'à se séparer d'Al pour produire un film muet. Parallèlement, Peppy devient la nouvelle égérie du studio..."
-          },
+            "rubricId":100000,
+            "categoryId":100000,
+            "data":"{\"field\": \"value1\"}",
+            "titles": {
+                "originalTitle": "originalTitle",
+                "epgTitle": "titreepgFR",
+                "titleDivisible": "titreLabelliseSecableFR",
+                "titleIndivisible": "titreLabelliseInsecableFR",
+                "subTitleDivisible": "sousTitreLabelliseSecableFR",
+                "subTitleIndivisible": "sousTitreLabelliseInsecableFR"
+            },
+            "synopsis": {
+                "small": "resumecourtFR",
+                "large": "resumeLongFR",
+                "medium": "resumemoyen1FR"
+            }
         }
 
 + Response 204 (application/json)
