@@ -4276,6 +4276,167 @@ Search for lists
               }
             }
 
+## Broadcasts VOD [/api/search/broadcasts/vod?limit={limit}&page={page}]
+
+Search for on demand broadcasts
+
++ Parameters
+    + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page =`1` (optional, number, `2`) ... The page to be returned
+
+### Get On demand broadcasts [POST]
+
+The query params are :
+
+- `contentId`, array of content id
+- `epgId`, array of epg id
+- `startDate`, the start date of the period to query
+- `endDate`, the end date of the period to query
+
++ Request (application/json)
+
+    + Body
+
+            {
+              "content": [
+                4900844
+              ],
+              "epg": [
+                1
+              ],
+              "startDate": "2015-03-10T13:36:42.000+0000",
+              "endDate": "2015-06-20T13:36:42.000+0000"
+            }
+
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+              "data": [
+                {
+                  "providerId": "ANT",
+                  "assetId": "1081386_1",
+                  "epgId": 1,
+                  "contentId": 4900844,
+                  "startDate": "2015-03-13T23:00:00.000+0000",
+                  "endDate": "2016-03-12T23:00:00.000+0000"
+                },
+                {
+                  "providerId": "ANT",
+                  "assetId": "1081386_1",
+                  "epgId": 1,
+                  "contentId": 4900844,
+                  "startDate": "2015-03-13T23:00:00.000+0000",
+                  "endDate": "2016-03-12T23:00:00.000+0000"
+                }
+              ],
+              "paging": {}
+            }
+
+## Broadcasts live [/api/search/broadcasts/live?limit={limit}&page={page}]
+
+Search for live broadcasts
+
++ Parameters
+    + limit = `10` (optional, number, `10`) ... The number of elements retuned limit (max 300)
+    + page =`1` (optional, number, `2`) ... The page to be returned
+
+### Get live broadcasts [POST]
+
+The query params are :
+
+- `contentId`, array of content id
+- `epgId`, array of epg id
+- `startDate`, the start date of the period to query
+- `endDate`, the end date of the period to query
+
++ Request (application/json)
+
+    + Body
+
+            {
+              "content": [
+                4900844
+              ],
+              "epg": [
+                1
+              ],
+              "startDate": "2015-03-10T13:36:42.000+0000",
+              "endDate": "2015-06-20T13:36:42.000+0000"
+            }
+
+    + Body
+
+            {
+              "data": [
+                {
+                  "providerId": "canal.fr",
+                  "assetId": "121007369",
+                  "epgId": 1,
+                  "contentId": 4900844,
+                  "broadcastDate": "2015-05-13T10:31:06.000+0000",
+                  "startDate": null,
+                  "endDate": null
+                },
+                {
+                  "providerId": "canal.fr",
+                  "assetId": "121654968",
+                  "epgId": 1,
+                  "contentId": 4900844,
+                  "broadcastDate": "2015-05-13T11:06:37.000+0000",
+                  "startDate": null,
+                  "endDate": null
+                },
+                {
+                  "providerId": "canal.fr",
+                  "assetId": "121655008",
+                  "epgId": 1,
+                  "contentId": 4900844,
+                  "broadcastDate": "2015-05-13T11:06:37.000+0000",
+                  "startDate": null,
+                  "endDate": null
+                },
+                {
+                  "providerId": "canal.fr",
+                  "assetId": "121655063",
+                  "epgId": 1,
+                  "contentId": 4900844,
+                  "broadcastDate": "2015-04-27T12:16:35.000+0000",
+                  "startDate": null,
+                  "endDate": null
+                },
+                {
+                  "providerId": "canal.fr",
+                  "assetId": "123080423",
+                  "epgId": 1,
+                  "contentId": 4900844,
+                  "broadcastDate": "2015-05-11T19:47:39.000+0000",
+                  "startDate": null,
+                  "endDate": null
+                },
+                {
+                  "providerId": "canal.fr",
+                  "assetId": "123129037",
+                  "epgId": 1,
+                  "contentId": 4900844,
+                  "broadcastDate": "2015-05-18T09:23:27.000+0000",
+                  "startDate": null,
+                  "endDate": null
+                },
+                {
+                  "providerId": "canal.fr",
+                  "assetId": "123080373",
+                  "epgId": 1,
+                  "contentId": 4900844,
+                  "broadcastDate": "2015-06-01T15:24:18.000+0000",
+                  "startDate": null,
+                  "endDate": null
+                }
+              ],
+              "paging": {}
+            }
 
 # Group Bulk
 In order to perform the same operation on multiple object we provide a Bulk API with these operations:
